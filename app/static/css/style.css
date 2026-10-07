@@ -1,0 +1,16 @@
+body { background: #f5f7fb; }
+.bg-primary-subtle-custom { background: linear-gradient(90deg, #3949ab, #1e88e5); }
+.estrellas { color: #f5a623; white-space: nowrap; }
+.tarjeta-apunte { transition: transform .15s, box-shadow .15s; }
+.tarjeta-apunte:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important; }
+.hero { background: linear-gradient(135deg, #3949ab, #1e88e5); color: #fff; border-radius: 1rem; }
+.stat { font-size: 2rem; font-weight: 700; }
+.comentario { background: #fff; border-radius: .5rem; padding: .75rem 1rem; border: 1px solid #e5e7eb; }
+.selector-estrellas { direction: rtl; display: inline-flex; }
+.selector-estrellas input { display: none; }
+.selector-estrellas label { font-size: 1.8rem; color: #ccc; cursor: pointer; padding: 0 .1rem; }
+.selector-estrellas input:checked ~ label,
+.selector-estrellas label:hover,
+.selector-estrellas label:hover ~ label { color: #f5a623; }
+.barra-dist { height: .6rem; }
+details summary { cursor: pointer; list-style: none; }

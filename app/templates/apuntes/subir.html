@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Subir apunte{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center"><div class="col-lg-8">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h3 class="mb-3"><i class="bi bi-cloud-upload"></i> Subir material de estudio</h3>
+    {% if not materias %}
+      <div class="alert alert-warning">No hay materias todavía. <a href="{{ url_for('main.nueva_materia') }}">Crea una primero</a>.</div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3"><label class="form-label">Título</label><input class="form-control" name="titulo" value="{{ form.get('titulo', '') }}" required maxlength="150"></div>
+      <div class="row">
+        <div class="col-md-7 mb-3"><label class="form-label">Materia</label>
+          <select class="form-select" name="materia_id" required>
+            <option value="">Selecciona...</option>
+            {% for m in materias %}<option value="{{ m.id }}" {{ 'selected' if form.get('materia_id')|string == m.id|string }}>{{ m.nombre }} ({{ m.codigo }})</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-5 mb-3"><label class="form-label">Tipo</label>
+          <select class="form-select" name="tipo">
+            {% for t in tipos %}<option {{ 'selected' if form.get('tipo') == t }}>{{ t }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="mb-3"><label class="form-label">Descripción</label><textarea class="form-control" name="descripcion" rows="3">{{ form.get('descripcion', '') }}</textarea></div>
+      <div class="mb-3"><label class="form-label">Etiquetas <small class="text-muted">(separadas por coma)</small></label><input class="form-control" name="etiquetas" placeholder="parcial1, derivadas, resumen" value="{{ form.get('etiquetas', '') }}"></div>
+      <div class="mb-3"><label class="form-label">Archivo <small class="text-muted">(máx. 20 MB: pdf, docx, pptx, xlsx, txt, md, png, jpg, zip)</small></label><input class="form-control" type="file" name="archivo" required></div>
+      <button class="btn btn-primary"><i class="bi bi-upload"></i> Publicar</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

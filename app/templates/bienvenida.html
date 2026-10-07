@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titulo %}Bienvenido{% endblock %}
+{% block contenido %}
+<div class="hero p-5 mb-4 shadow">
+  <h1 class="display-5 fw-bold">Comparte apuntes. Aprende en comunidad.</h1>
+  <p class="lead">Sube tu material de estudio por materias, descarga y califica el de tus compañeros,
+    conversa en los foros y pide tutorías personalizadas a quien mejor explica.</p>
+  <a href="{{ url_for('auth.registro') }}" class="btn btn-warning btn-lg me-2">Crear cuenta</a>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Ya tengo cuenta</a>
+</div>
+<div class="row text-center g-3 mb-4">
+  {% for etiqueta, valor, icono in [('Estudiantes', stats.usuarios, 'people'), ('Materias', stats.materias, 'collection'),
+                                    ('Apuntes', stats.apuntes, 'journal-text'), ('Descargas', stats.descargas, 'download')] %}
+  <div class="col-6 col-md-3"><div class="card shadow-sm"><div class="card-body">
+    <i class="bi bi-{{ icono }} fs-3 text-primary"></i><div class="stat">{{ valor }}</div><div class="text-muted">{{ etiqueta }}</div>
+  </div></div></div>
+  {% endfor %}
+</div>
+<div class="row g-3">
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5><i class="bi bi-cloud-upload text-primary"></i> Sube material</h5>PDF, Word, presentaciones, imágenes y más, organizados por materia y etiquetas.</div></div></div>
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5><i class="bi bi-star-fill text-warning"></i> Califica</h5>Estrellas y "me gusta" para que el mejor material suba al ranking.</div></div></div>
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5><i class="bi bi-people text-success"></i> Pide tutorías</h5>Solicita una sesión personalizada al autor de los apuntes.</div></div></div>
+</div>
+{% endblock %}

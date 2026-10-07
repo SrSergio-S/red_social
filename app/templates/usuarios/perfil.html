@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta_apunte, estrellas with context %}
+{% block titulo %}{{ usuario.nombre }}{% endblock %}
+{% block contenido %}
+<div class="card shadow-sm mb-4"><div class="card-body d-flex flex-wrap gap-4 align-items-center">
+  <div class="display-4 text-primary"><i class="bi bi-person-circle"></i></div>
+  <div class="flex-grow-1">
+    <h2 class="mb-0">{{ usuario.nombre }}</h2>
+    <div class="text-muted">{{ usuario.carrera or 'Carrera no indicada' }}{% if usuario.semestre %} · Semestre {{ usuario.semestre }}{% endif %}</div>
+    {% if usuario.bio %}<p class="mt-2 mb-0">{{ usuario.bio }}</p>{% endif %}
+    <div class="mt-2">Reputación: {{ estrellas(usuario.reputacion) if usuario.reputacion else '—' }}</div>
+  </div>
+  <div class="text-center">
+    <div class="d-flex gap-4">
+      <div><div class="stat">{{ usuario.apuntes|length }}</div><small>Apuntes</small></div>
+      <div><div class="stat">{{ total_descargas }}</div><small>Descargas</small></div>
+      <div><div class="stat">{{ total_likes }}</div><small>Me gusta</small></div>
+    </div>
+    {% if current_user.is_authenticated and current_user.id != usuario.id and usuario.ofrece_tutorias %}
+      <a class="btn btn-success mt-2" href="{{ url_for('tutorias.solicitar', tutor_id=usuario.id) }}"><i class="bi bi-person-video3"></i> Solicitar tutoría</a>
+    {% elif current_user.is_authenticated and current_user.id == usuario.id %}
+      <a class="btn btn-outline-primary mt-2" href="{{ url_for('main.editar_perfil') }}"><i class="bi bi-pencil"></i> Editar perfil</a>
+    {% endif %}
+    {% if usuario.ofrece_tutorias %}<div class="small text-success mt-1"><i class="bi bi-check-circle"></i> Ofrece tutorías</div>{% endif %}
+  </div>
+</div></div>
+
+<div class="row g-4">
+  <div class="col-lg-9">
+    <h5>Apuntes publicados</h5>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+      {% for a in usuario.apuntes|sort(attribute='fecha_subida', reverse=true) %}<div class="col">{{ tarjeta_apunte(a) }}</div>
+      {% else %}<p class="text-muted">Aún no ha publicado apuntes.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <h5>Materias que sigue</h5>
+    <ul class="list-group">
+      {% for m in usuario.materias_seguidas %}<li class="list-group-item"><a href="{{ url_for('main.ver_materia', materia_id=m.id) }}">{{ m.nombre }}</a></li>
+      {% else %}<li class="list-group-item text-muted">Ninguna</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

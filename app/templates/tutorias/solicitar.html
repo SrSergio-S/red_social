@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titulo %}Solicitar tutoría{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center"><div class="col-md-7">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h3 class="mb-1">Solicitar tutoría</h3>
+    <p class="text-muted">a <a href="{{ url_for('main.perfil', usuario_id=tutor.id) }}">{{ tutor.nombre }}</a>{% if apunte %} sobre «{{ apunte.titulo }}»{% endif %}</p>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if apunte %}<input type="hidden" name="apunte_id" value="{{ apunte.id }}">{% endif %}
+      <div class="mb-3"><label class="form-label">Tema</label><input class="form-control" name="tema" maxlength="150" required value="{{ apunte.titulo if apunte else '' }}"></div>
+      <div class="mb-3"><label class="form-label">Materia</label>
+        <select class="form-select" name="materia_id">
+          <option value="">(sin especificar)</option>
+          {% for m in materias %}<option value="{{ m.id }}" {{ 'selected' if apunte and apunte.materia_id == m.id }}>{{ m.nombre }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label">¿Qué necesitas?</label><textarea class="form-control" name="mensaje" rows="4" required></textarea></div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Fecha y hora propuesta</label><input class="form-control" type="datetime-local" name="fecha_propuesta"></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Modalidad</label>
+          <select class="form-select" name="modalidad"><option value="virtual">Virtual</option><option value="presencial">Presencial</option></select>
+        </div>
+      </div>
+      <button class="btn btn-success"><i class="bi bi-send"></i> Enviar solicitud</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

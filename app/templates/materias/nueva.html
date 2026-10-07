@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Nueva materia{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center"><div class="col-md-7">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h3 class="mb-3">Crear materia</h3>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="row">
+        <div class="col-4 mb-3"><label class="form-label">Código</label><input class="form-control" name="codigo" placeholder="SIS305" required></div>
+        <div class="col-8 mb-3"><label class="form-label">Nombre</label><input class="form-control" name="nombre" required></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Descripción</label><textarea class="form-control" name="descripcion" rows="3"></textarea></div>
+      <div class="row">
+        <div class="col-8 mb-3"><label class="form-label">Carrera / Facultad</label><input class="form-control" name="carrera"></div>
+        <div class="col-4 mb-3"><label class="form-label">Semestre</label><input class="form-control" type="number" min="1" max="12" name="semestre"></div>
+      </div>
+      <button class="btn btn-primary">Crear</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

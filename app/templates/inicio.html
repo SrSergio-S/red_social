@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta_apunte, estrellas with context %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h4 class="mb-3">Novedades de tus materias</h4>
+    {% if not current_user.materias_seguidas %}
+      <div class="alert alert-info">Aún no sigues ninguna materia. <a href="{{ url_for('main.materias') }}">Explora materias</a> y síguelas para ver aquí sus apuntes.</div>
+    {% elif not feed %}
+      <div class="alert alert-light border">Todavía no hay apuntes en tus materias. ¡<a href="{{ url_for('main.subir_apunte') }}">Sé el primero en subir uno</a>!</div>
+    {% endif %}
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      {% for a in feed %}<div class="col">{{ tarjeta_apunte(a) }}</div>{% endfor %}
+    </div>
+  </div>
+  <div class="col-lg-4">
+    {% if pendientes %}
+      <div class="alert alert-warning"><i class="bi bi-bell"></i> Tienes <b>{{ pendientes }}</b> solicitud(es) de tutoría pendiente(s). <a href="{{ url_for('tutorias.mis_tutorias') }}">Revisar</a></div>
+    {% endif %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-semibold"><i class="bi bi-collection"></i> Mis materias</div>
+      <ul class="list-group list-group-flush">
+        {% for m in current_user.materias_seguidas %}
+          <li class="list-group-item"><a href="{{ url_for('main.ver_materia', materia_id=m.id) }}">{{ m.nombre }}</a> <small class="text-muted">{{ m.codigo }}</small></li>
+        {% else %}<li class="list-group-item text-muted">Ninguna</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold"><i class="bi bi-star"></i> Mejor valorados</div>
+      <ul class="list-group list-group-flush">
+        {% for a, prom, n in mejor_valorados %}
+          <li class="list-group-item"><a href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">{{ a.titulo }}</a><br>{{ estrellas(prom|round(1), n) }}</li>
+        {% else %}<li class="list-group-item text-muted">Sin calificaciones aún</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
