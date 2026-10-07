@@ -210,3 +210,18 @@ def test_seed_y_paginas_publicas(client):
     login(client, "ana@uni.edu", "demo123")
     for url in ["/", "/tutorias/", "/apuntes/subir", "/perfil/editar", "/materias/nueva", "/tutorias/solicitar/2"]:
         assert client.get(url).status_code == 200, url
+
+
+def test_carga_datos_demo_si_la_bd_esta_vacia(tmp_path):
+    class Cfg(TestConfig):
+        AUTO_SEED = True
+        UPLOAD_FOLDER = str(tmp_path / "uploads")
+
+    app = create_app(Cfg)
+    with app.app_context():
+        assert Usuario.query.filter_by(email="ana@uni.edu").one().check_password("demo123")
+        r = app.test_client().post("/login", data={"email": "ana@uni.edu", "password": "demo123"},
+                                   follow_redirects=True)
+        assert b"Novedades de tus materias" in r.data
+        db.session.remove()
+        db.drop_all()
