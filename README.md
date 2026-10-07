@@ -103,11 +103,32 @@ Solo entran los usuarios marcados como administradores. Para convertir a otro us
 flask --app run hacer-admin correo@ejemplo.com
 ```
 
+### Llevar tus datos a otro computador (sincronizar con GitHub)
+
+La base de datos (`instance/`) no se sube a GitHub, pero puedes guardar sus datos dentro del proyecto:
+
+```bash
+flask --app run guardar-datos --subir
+```
+
+Esto exporta todas las tablas a `datos/datos.json`, copia los archivos subidos a `datos/archivos/`
+y hace *commit* y *push* a GitHub. Sin `--subir` solo guarda la carpeta y tú haces el commit.
+
+- **Computador nuevo** (recién clonado): al iniciar la app se cargan solos los datos de `datos/`.
+- **Computador donde ya usabas la app**: después de `git pull`, ejecuta
+  `flask --app run cargar-datos` para reemplazar su base de datos por la de `datos/`.
+
+> Los datos se sincronizan cuando tú lo pides, no en tiempo real. Guarda desde un solo lugar a la vez;
+> si cambias datos en dos computadores, el último que haga `guardar-datos` reemplaza los del otro.
+> Si el repositorio es público, cualquiera puede ver `datos/` (las contraseñas van cifradas).
+
 ### Comandos útiles
 
 | Comando | Qué hace |
 |---|---|
 | `flask --app run seed` | Borra la base de datos y la llena con datos de ejemplo |
+| `flask --app run guardar-datos [--subir]` | Guarda los datos actuales en `datos/` (y los sube a GitHub) |
+| `flask --app run cargar-datos` | Reemplaza la base de datos por la guardada en `datos/` |
 | `flask --app run reset-db` | Borra todos los datos (al volver a arrancar se cargan los de ejemplo, salvo con `AUTO_SEED=0`) |
 | `flask --app run hacer-admin CORREO` | Da acceso al panel `/admin` a ese usuario |
 | `flask --app run run --debug` | Inicia con recarga automática al editar código |
@@ -132,9 +153,11 @@ red_social/
 │   ├── main.py            # Materias, apuntes, calificaciones, likes, foros, perfiles, ranking
 │   ├── tutorias.py        # Solicitudes de tutoría y sus estados
 │   ├── admin.py           # Panel de administración (/admin)
+│   ├── datos.py           # Comandos guardar-datos / cargar-datos
 │   ├── seed.py            # Comandos seed / reset-db y datos de ejemplo
 │   ├── templates/         # Páginas HTML (Jinja2 + Bootstrap 5)
 │   └── static/            # CSS y Bootstrap local
+├── datos/                 # (se crea con guardar-datos) tus datos para llevar a otro computador
 ├── tests/test_app.py      # Pruebas automáticas
 └── docs/                  # Modelo de datos y capturas
 ```

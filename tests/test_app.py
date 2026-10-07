@@ -279,3 +279,48 @@ def test_admin_edita_y_elimina_datos(client, app):
     ana = Usuario.query.filter_by(email="ana@uni.edu").one()
     client.post("/admin/usuario/delete/", data={"id": ana.id})
     assert db.session.get(Usuario, ana.id) is not None  # no puede borrarse a sí misma
+
+
+def test_guardar_y_cargar_datos_en_otro_computador(tmp_path):
+    """Los datos guardados en datos/ aparecen al instalar el proyecto en otro computador."""
+    import os
+
+    carpeta_datos = tmp_path / "datos"
+
+    class Computador1(TestConfig):
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + str(tmp_path / "pc1.db")
+        UPLOAD_FOLDER = str(tmp_path / "uploads1")
+        DATOS_DIR = str(carpeta_datos)
+
+    app1 = create_app(Computador1)
+    with app1.app_context():
+        poblar_datos_demo()
+        cliente = app1.test_client()
+        login(cliente, "ana@uni.edu", "demo123")
+        m = crear_materia("NUE100", "Materia nueva")
+        subir(cliente, m.id, titulo="Mi apunte", contenido=b"contenido real", nombre="mio.txt")
+        luis = Usuario.query.filter_by(email="luis@uni.edu").one()
+        luis.nombre = "Luis Editado"
+        db.session.commit()
+        app1.test_cli_runner().invoke(args=["guardar-datos"])
+        db.session.remove()
+
+    assert (carpeta_datos / "datos.json").exists()
+    assert len(os.listdir(carpeta_datos / "archivos")) == 11
+
+    class Computador2(Computador1):  # base de datos nueva y vacía, misma carpeta datos/
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + str(tmp_path / "pc2.db")
+        UPLOAD_FOLDER = str(tmp_path / "uploads2")
+        AUTO_SEED = True
+
+    app2 = create_app(Computador2)
+    with app2.app_context():
+        assert Usuario.query.filter_by(email="luis@uni.edu").one().nombre == "Luis Editado"
+        assert Materia.query.filter_by(codigo="NUE100").one()
+        apunte = Apunte.query.filter_by(titulo="Mi apunte").one()
+        cliente = app2.test_client()
+        login(cliente, "ana@uni.edu", "demo123")
+        assert cliente.get(f"/apuntes/{apunte.id}/descargar").data == b"contenido real"
+        # se puede seguir usando con normalidad (los ids nuevos no chocan)
+        assert b"publicado" in subir(cliente, apunte.materia_id, titulo="Otro", nombre="otro.txt").data
+        db.session.remove()
