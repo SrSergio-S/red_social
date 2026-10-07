@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta_apunte, hilo, form_comentario with context %}
+{% block titulo %}{{ materia.nombre }}{% endblock %}
+{% block contenido %}
+<div class="card shadow-sm mb-4"><div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <span class="badge text-bg-primary">{{ materia.codigo }}</span>
+    {% if materia.carrera %}<span class="badge text-bg-light border">{{ materia.carrera }}</span>{% endif %}
+    {% if materia.semestre %}<span class="badge text-bg-light border">Semestre {{ materia.semestre }}</span>{% endif %}
+    <h2 class="mt-2 mb-1">{{ materia.nombre }}</h2>
+    <p class="text-muted mb-0">{{ materia.descripcion or '' }}</p>
+    <small><i class="bi bi-people"></i> {{ materia.seguidores|length }} seguidores</small>
+  </div>
+  {% if current_user.is_authenticated %}
+  <div class="d-flex gap-2">
+    <form method="post" action="{{ url_for('main.seguir_materia', materia_id=materia.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if current_user.sigue(materia) %}<button class="btn btn-success"><i class="bi bi-check2"></i> Siguiendo</button>
+      {% else %}<button class="btn btn-outline-primary"><i class="bi bi-plus"></i> Seguir</button>{% endif %}
+    </form>
+    <a class="btn btn-warning" href="{{ url_for('main.subir_apunte', materia_id=materia.id) }}"><i class="bi bi-cloud-upload"></i> Subir apunte</a>
+  </div>
+  {% endif %}
+</div></div>
+
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-apuntes">Apuntes ({{ apuntes|length }})</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#foro">Foro ({{ materia.comentarios|length }})</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-seg">Estudiantes</button></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="tab-apuntes">
+    <div class="mb-3 small">Ordenar:
+      {% for clave, texto in [('recientes', 'Recientes'), ('valorados', 'Mejor valorados'), ('descargados', 'Más descargados')] %}
+        <a class="btn btn-sm {{ 'btn-primary' if orden == clave else 'btn-outline-secondary' }}" href="?orden={{ clave }}">{{ texto }}</a>
+      {% endfor %}
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+      {% for a in apuntes %}<div class="col">{{ tarjeta_apunte(a) }}</div>
+      {% else %}<p class="text-muted">Aún no hay apuntes en esta materia.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="tab-pane fade" id="foro">
+    {% if current_user.is_authenticated %}<div class="mb-3">{{ form_comentario(materia_id=materia.id, placeholder='Pregunta o comparte algo con la clase...') }}</div>{% endif %}
+    {% for c in foro %}{{ hilo(c, materia_id=materia.id) }}
+    {% else %}<p class="text-muted">Nadie ha escrito en el foro todavía.</p>{% endfor %}
+  </div>
+  <div class="tab-pane fade" id="tab-seg">
+    <ul class="list-group">
+      {% for u in materia.seguidores %}
+        <li class="list-group-item d-flex justify-content-between"><a href="{{ url_for('main.perfil', usuario_id=u.id) }}">{{ u.nombre }}</a><small class="text-muted">{{ u.carrera or '' }}</small></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (location.hash === '#foro') { document.querySelector('[data-bs-target="#foro"]').click(); }
+  });
+</script>
+{% endblock %}

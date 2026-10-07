@@ -1,0 +1,84 @@
+{% macro estrellas(valor, total=None) -%}
+  <span class="estrellas" title="{{ valor or 'Sin calificar' }}">
+  {%- for i in range(1, 6) -%}
+    {%- if valor and valor >= i %}<i class="bi bi-star-fill"></i>
+    {%- elif valor and valor >= i - 0.5 %}<i class="bi bi-star-half"></i>
+    {%- else %}<i class="bi bi-star"></i>{% endif -%}
+  {%- endfor -%}
+  </span>
+  {%- if valor %} <small class="text-muted">{{ valor }}{% if total is not none %} ({{ total }}){% endif %}</small>{% endif %}
+{%- endmacro %}
+
+{% macro icono_archivo(ext) -%}
+  {%- set mapa = {'pdf': 'bi-file-earmark-pdf text-danger', 'doc': 'bi-file-earmark-word text-primary',
+      'docx': 'bi-file-earmark-word text-primary', 'ppt': 'bi-file-earmark-ppt text-warning',
+      'pptx': 'bi-file-earmark-ppt text-warning', 'xls': 'bi-file-earmark-excel text-success',
+      'xlsx': 'bi-file-earmark-excel text-success', 'png': 'bi-file-earmark-image text-info',
+      'jpg': 'bi-file-earmark-image text-info', 'jpeg': 'bi-file-earmark-image text-info',
+      'zip': 'bi-file-earmark-zip text-secondary', 'md': 'bi-file-earmark-text text-dark',
+      'txt': 'bi-file-earmark-text text-dark'} -%}
+  <i class="bi {{ mapa.get(ext, 'bi-file-earmark') }}"></i>
+{%- endmacro %}
+
+{% macro tarjeta_apunte(a) -%}
+<div class="card h-100 shadow-sm tarjeta-apunte">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <span class="badge text-bg-light border">{{ a.tipo }}</span>
+      <span class="fs-4">{{ icono_archivo(a.extension) }}</span>
+    </div>
+    <h6 class="card-title mb-1"><a class="stretched-link text-decoration-none" href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">{{ a.titulo }}</a></h6>
+    <div class="small text-muted mb-2">{{ a.materia.nombre }} · por {{ a.autor.nombre }}</div>
+    {{ estrellas(a.promedio_estrellas, a.calificaciones|length) }}
+  </div>
+  <div class="card-footer bg-transparent small text-muted d-flex justify-content-between">
+    <span><i class="bi bi-download"></i> {{ a.total_descargas }}</span>
+    <span><i class="bi bi-heart"></i> {{ a.usuarios_like|length }}</span>
+    <span><i class="bi bi-chat"></i> {{ a.comentarios|length }}</span>
+    <span>{{ a.fecha_subida|fecha('%d/%m/%y') }}</span>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro form_comentario(apunte_id=None, materia_id=None, padre_id=None, placeholder='Escribe un comentario...') -%}
+<form method="post" action="{{ url_for('main.comentar') }}" class="d-flex gap-2 {{ 'mt-2' if padre_id }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if apunte_id %}<input type="hidden" name="apunte_id" value="{{ apunte_id }}">{% endif %}
+  {% if materia_id %}<input type="hidden" name="materia_id" value="{{ materia_id }}">{% endif %}
+  {% if padre_id %}<input type="hidden" name="padre_id" value="{{ padre_id }}">{% endif %}
+  <input class="form-control form-control-sm" name="contenido" placeholder="{{ placeholder }}" required maxlength="2000">
+  <button class="btn btn-sm btn-primary"><i class="bi bi-send"></i></button>
+</form>
+{%- endmacro %}
+
+{% macro hilo(c, apunte_id=None, materia_id=None) -%}
+<div class="comentario mb-3">
+  <div class="d-flex justify-content-between">
+    <div>
+      <a class="fw-semibold text-decoration-none" href="{{ url_for('main.perfil', usuario_id=c.autor.id) }}">{{ c.autor.nombre }}</a>
+      <small class="text-muted ms-1">{{ c.fecha|fecha }}</small>
+    </div>
+    {% if current_user.is_authenticated and current_user.id == c.autor_id %}
+      <form method="post" action="{{ url_for('main.eliminar_comentario', comentario_id=c.id) }}" onsubmit="return confirm('¿Eliminar comentario?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-link btn-sm text-danger p-0"><i class="bi bi-trash"></i></button>
+      </form>
+    {% endif %}
+  </div>
+  <div>{{ c.contenido }}</div>
+  <div class="respuestas ms-4 mt-2">
+    {% for r in c.respuestas %}
+      <div class="border-start ps-2 mb-2">
+        <a class="fw-semibold text-decoration-none small" href="{{ url_for('main.perfil', usuario_id=r.autor.id) }}">{{ r.autor.nombre }}</a>
+        <small class="text-muted">{{ r.fecha|fecha }}</small>
+        <div class="small">{{ r.contenido }}</div>
+      </div>
+    {% endfor %}
+    {% if current_user.is_authenticated %}
+      <details><summary class="small text-primary">Responder</summary>
+        {{ form_comentario(apunte_id=apunte_id, materia_id=materia_id, padre_id=c.id, placeholder='Tu respuesta...') }}
+      </details>
+    {% endif %}
+  </div>
+</div>
+{%- endmacro %}

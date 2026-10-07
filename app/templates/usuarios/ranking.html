@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_macros.html" import estrellas with context %}
+{% block titulo %}Ranking{% endblock %}
+{% block contenido %}
+<h3 class="mb-3"><i class="bi bi-trophy text-warning"></i> Ranking de contribuidores</h3>
+<div class="card shadow-sm">
+<table class="table table-hover mb-0 align-middle">
+  <thead><tr><th>#</th><th>Estudiante</th><th>Carrera</th><th class="text-center">Apuntes</th><th>Calificación promedio</th></tr></thead>
+  <tbody>
+  {% for u, n_apuntes, prom, n_calif in top %}
+    <tr>
+      <td>{% if loop.index <= 3 %}<i class="bi bi-award-fill" style="color: {{ ['#d4af37', '#a8a9ad', '#cd7f32'][loop.index0] }}"></i>{% else %}{{ loop.index }}{% endif %}</td>
+      <td><a href="{{ url_for('main.perfil', usuario_id=u.id) }}">{{ u.nombre }}</a></td>
+      <td class="text-muted small">{{ u.carrera or '' }}</td>
+      <td class="text-center">{{ n_apuntes }}</td>
+      <td>{{ estrellas(prom|round(1), n_calif) if prom else '—' }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="text-muted text-center">Aún no hay apuntes publicados.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

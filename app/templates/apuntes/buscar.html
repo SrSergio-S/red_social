@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta_apunte with context %}
+{% block titulo %}Buscar apuntes{% endblock %}
+{% block contenido %}
+<h3 class="mb-3">Apuntes</h3>
+<form class="row g-2 mb-3">
+  <div class="col-md-6"><input class="form-control" name="q" value="{{ q }}" placeholder="Título, descripción o materia"></div>
+  <div class="col-md-3">
+    <select class="form-select" name="tipo"><option value="">Todos los tipos</option>
+      {% for t in tipos %}<option {{ 'selected' if tipo == t }}>{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  {% if etiqueta %}<input type="hidden" name="etiqueta" value="{{ etiqueta }}">{% endif %}
+  <div class="col-md-3"><button class="btn btn-primary w-100"><i class="bi bi-search"></i> Buscar</button></div>
+</form>
+<div class="mb-3">
+  {% for e, n in etiquetas_populares %}
+    <a class="badge rounded-pill {{ 'text-bg-primary' if etiqueta == e.nombre else 'text-bg-light border' }} text-decoration-none" href="{{ url_for('main.buscar_apuntes', etiqueta=e.nombre) }}">#{{ e.nombre }} ({{ n }})</a>
+  {% endfor %}
+  {% if etiqueta %}<a class="small ms-2" href="{{ url_for('main.buscar_apuntes') }}">quitar filtro</a>{% endif %}
+</div>
+<p class="text-muted small">{{ apuntes|length }} resultado(s)</p>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+  {% for a in apuntes %}<div class="col">{{ tarjeta_apunte(a) }}</div>{% endfor %}
+</div>
+{% endblock %}

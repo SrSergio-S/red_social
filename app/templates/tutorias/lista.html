@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Mis tutorías{% endblock %}
+
+{% macro accion(s, nombre, texto, clase, con_respuesta=false) -%}
+<form method="post" action="{{ url_for('tutorias.cambiar_estado', solicitud_id=s.id, accion=nombre) }}" class="d-flex gap-2 {{ 'flex-grow-1' if con_respuesta }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if con_respuesta %}<input class="form-control form-control-sm" name="respuesta" placeholder="Mensaje opcional para el estudiante">{% endif %}
+  <button class="btn btn-sm btn-{{ clase }} text-nowrap">{{ texto }}</button>
+</form>
+{%- endmacro %}
+
+{% macro tarjeta(s, rol) -%}
+{% set colores = {'pendiente': 'warning', 'aceptada': 'primary', 'rechazada': 'danger', 'completada': 'success', 'cancelada': 'secondary'} %}
+<div class="card shadow-sm mb-3"><div class="card-body">
+  <div class="d-flex justify-content-between">
+    <h6 class="mb-1">{{ s.tema }}</h6>
+    <span class="badge text-bg-{{ colores[s.estado] }}">{{ s.estado|capitalize }}</span>
+  </div>
+  <div class="small text-muted mb-2">
+    {% if rol == 'tutor' %}De <a href="{{ url_for('main.perfil', usuario_id=s.solicitante.id) }}">{{ s.solicitante.nombre }}</a>
+    {% else %}Para <a href="{{ url_for('main.perfil', usuario_id=s.tutor.id) }}">{{ s.tutor.nombre }}</a>{% endif %}
+    · {{ s.modalidad|capitalize }}
+    {% if s.materia %}· {{ s.materia.nombre }}{% endif %}
+    {% if s.fecha_propuesta %}· <i class="bi bi-calendar-event"></i> {{ s.fecha_propuesta|fecha }}{% endif %}
+  </div>
+  {% if s.apunte %}<div class="small mb-1"><i class="bi bi-paperclip"></i> <a href="{{ url_for('main.ver_apunte', apunte_id=s.apunte.id) }}">{{ s.apunte.titulo }}</a></div>{% endif %}
+  <p class="mb-2">{{ s.mensaje }}</p>
+  {% if s.respuesta_tutor %}<div class="alert alert-light border small py-2"><b>Respuesta del tutor:</b> {{ s.respuesta_tutor }}</div>{% endif %}
+  <div class="d-flex flex-wrap gap-2">
+    {% if rol == 'tutor' and s.estado == 'pendiente' %}
+      {{ accion(s, 'aceptar', 'Aceptar', 'success', true) }}
+      {{ accion(s, 'rechazar', 'Rechazar', 'outline-danger') }}
+    {% elif rol == 'tutor' and s.estado == 'aceptada' %}
+      {{ accion(s, 'completar', 'Marcar como completada', 'primary') }}
+    {% elif rol == 'solicitante' and s.estado in ('pendiente', 'aceptada') %}
+      {{ accion(s, 'cancelar', 'Cancelar solicitud', 'outline-secondary') }}
+    {% endif %}
+  </div>
+</div></div>
+{%- endmacro %}
+
+{% block contenido %}
+<h3 class="mb-3"><i class="bi bi-people"></i> Mis tutorías</h3>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <h5>Recibidas <small class="text-muted">(soy tutor)</small></h5>
+    {% for s in recibidas %}{{ tarjeta(s, 'tutor') }}{% else %}<p class="text-muted">No has recibido solicitudes.</p>{% endfor %}
+  </div>
+  <div class="col-lg-6">
+    <h5>Enviadas <small class="text-muted">(soy estudiante)</small></h5>
+    {% for s in solicitadas %}{{ tarjeta(s, 'solicitante') }}{% else %}<p class="text-muted">No has solicitado tutorías.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

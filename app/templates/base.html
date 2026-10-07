@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}ApuntesU{% endblock %} · Red Social Universitaria</title>
+  <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary-subtle-custom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('main.inicio') }}"><i class="bi bi-journal-bookmark-fill"></i> ApuntesU</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.materias') }}"><i class="bi bi-collection"></i> Materias</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.buscar_apuntes') }}"><i class="bi bi-search"></i> Apuntes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.ranking') }}"><i class="bi bi-trophy"></i> Ranking</a></li>
+      </ul>
+      <form class="d-flex me-lg-3 my-2 my-lg-0" action="{{ url_for('main.buscar_apuntes') }}">
+        <input class="form-control form-control-sm" type="search" name="q" placeholder="Buscar apuntes..." value="{{ request.args.get('q', '') }}">
+      </form>
+      <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="btn btn-warning btn-sm me-2 my-1" href="{{ url_for('main.subir_apunte') }}"><i class="bi bi-cloud-upload"></i> Subir</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('tutorias.mis_tutorias') }}"><i class="bi bi-people"></i> Tutorías</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ current_user.nombre.split()[0] }}</a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{{ url_for('main.perfil', usuario_id=current_user.id) }}">Mi perfil</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.editar_perfil') }}">Editar perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form method="post" action="{{ url_for('auth.logout') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="dropdown-item">Cerrar sesión</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Entrar</a></li>
+          <li class="nav-item"><a class="btn btn-light btn-sm my-1" href="{{ url_for('auth.registro') }}">Registrarse</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4 flex-grow-1">
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in mensajes %}
+      <div class="alert alert-{{ cat }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    {% endfor %}
+  {% endwith %}
+  {% block contenido %}{% endblock %}
+</main>
+
+<footer class="py-3 border-top text-center text-muted small">
+  ApuntesU · Red Social Universitaria de Intercambio de Apuntes y Tutorías · Flask + SQLite
+</footer>
+<script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
