@@ -87,6 +87,7 @@ def poblar_datos_demo():
         u = Usuario(nombre=nombre, email=email, carrera=carrera, semestre=semestre, bio=bio)
         u.set_password("demo123")
         usuarios.append(u)
+    usuarios[0].es_admin = True  # ana@uni.edu puede entrar a /admin
     db.session.add_all(usuarios)
 
     materias = {}
@@ -159,6 +160,17 @@ def registrar_comandos(app):
         db.create_all()
         click.echo("Base de datos reiniciada.")
 
+    @app.cli.command("hacer-admin")
+    @click.argument("email")
+    def hacer_admin(email):
+        """Da permisos de administrador (/admin) al usuario con ese correo."""
+        usuario = Usuario.query.filter_by(email=email.strip().lower()).first()
+        if not usuario:
+            raise click.ClickException(f"No existe un usuario con el correo {email}.")
+        usuario.es_admin = True
+        db.session.commit()
+        click.echo(f"{usuario.nombre} ahora es administrador. Entra en /admin")
+
     @app.cli.command("seed")
     def seed():
         """Reinicia la base de datos y la llena con datos de ejemplo."""
@@ -167,5 +179,5 @@ def registrar_comandos(app):
         poblar_datos_demo()
         click.echo(
             f"Datos de ejemplo creados: {Usuario.query.count()} usuarios, {Materia.query.count()} materias, "
-            f"{Apunte.query.count()} apuntes.\nEntra con ana@uni.edu / demo123"
+            f"{Apunte.query.count()} apuntes.\nEntra con ana@uni.edu / demo123 (es administradora: /admin)"
         )

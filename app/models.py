@@ -60,6 +60,7 @@ class Usuario(UserMixin, db.Model):
     semestre = db.Column(db.Integer)
     bio = db.Column(db.Text)
     ofrece_tutorias = db.Column(db.Boolean, default=True, nullable=False)
+    es_admin = db.Column(db.Boolean, default=False, nullable=False, server_default="0")
     fecha_registro = db.Column(db.DateTime, default=ahora, nullable=False)
 
     materias_seguidas = db.relationship(
@@ -91,8 +92,8 @@ class Usuario(UserMixin, db.Model):
         )
         return round(promedio, 1) if promedio else None
 
-    def __repr__(self):
-        return f"<Usuario {self.email}>"
+    def __str__(self):
+        return f"{self.nombre} <{self.email}>"
 
 
 class Materia(db.Model):
@@ -112,8 +113,8 @@ class Materia(db.Model):
         order_by="Comentario.fecha.desc()",
     )
 
-    def __repr__(self):
-        return f"<Materia {self.codigo}>"
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
 
 
 class Etiqueta(db.Model):
@@ -123,6 +124,9 @@ class Etiqueta(db.Model):
     nombre = db.Column(db.String(40), unique=True, nullable=False)
 
     apuntes = db.relationship("Apunte", secondary=apunte_etiquetas, back_populates="etiquetas")
+
+    def __str__(self):
+        return self.nombre
 
 
 class Apunte(db.Model):
@@ -176,6 +180,9 @@ class Apunte(db.Model):
                 return f"{tamano:.0f} {unidad}" if unidad == "B" else f"{tamano:.1f} {unidad}"
             tamano /= 1024
         return f"{tamano:.1f} TB"
+
+    def __str__(self):
+        return self.titulo
 
     def calificacion_de(self, usuario):
         return next((c for c in self.calificaciones if c.usuario_id == usuario.id), None)
@@ -242,6 +249,9 @@ class Comentario(db.Model):
         cascade="all, delete-orphan", order_by="Comentario.fecha.asc()",
     )
 
+    def __str__(self):
+        return f"{self.autor.nombre if self.autor else '?'}: {self.contenido[:40]}"
+
 
 class SolicitudTutoria(db.Model):
     __tablename__ = "solicitudes_tutoria"
@@ -262,7 +272,14 @@ class SolicitudTutoria(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=ahora, nullable=False)
     fecha_actualizacion = db.Column(db.DateTime, default=ahora, onupdate=ahora, nullable=False)
 
-    solicitante = db.relationship("Usuario", foreign_keys=[solicitante_id], backref="tutorias_solicitadas")
-    tutor = db.relationship("Usuario", foreign_keys=[tutor_id], backref="tutorias_recibidas")
+    # passive_deletes: al borrar un usuario, la BD elimina sus solicitudes (ON DELETE CASCADE)
+    solicitante = db.relationship(
+        "Usuario", foreign_keys=[solicitante_id],
+        backref=db.backref("tutorias_solicitadas", passive_deletes=True),
+    )
+    tutor = db.relationship(
+        "Usuario", foreign_keys=[tutor_id],
+        backref=db.backref("tutorias_recibidas", passive_deletes=True),
+    )
     materia = db.relationship("Materia")
     apunte = db.relationship("Apunte")

@@ -225,3 +225,57 @@ def test_carga_datos_demo_si_la_bd_esta_vacia(tmp_path):
         assert b"Novedades de tus materias" in r.data
         db.session.remove()
         db.drop_all()
+
+
+def test_admin_solo_para_administradores(client):
+    poblar_datos_demo()
+    assert client.get("/admin/").status_code == 302  # sin sesión -> login
+    login(client, "luis@uni.edu", "demo123")
+    assert client.get("/admin/").status_code == 403
+    assert client.get("/admin/usuario/").status_code == 403
+    logout(client)
+
+    login(client, "ana@uni.edu", "demo123")
+    assert b"Panel de administraci" in client.get("/admin/").data
+    for vista in ["usuario", "materia", "apunte", "etiqueta", "calificacion", "descarga", "comentario",
+                  "solicitudtutoria"]:
+        assert client.get(f"/admin/{vista}/").status_code == 200, vista
+        assert client.get(f"/admin/{vista}/details/?id=1").status_code == 200, vista
+    assert client.get("/admin/usuario/edit/?id=2").status_code == 200
+    assert client.get("/admin/materia/new/").status_code == 200
+
+
+def test_admin_edita_y_elimina_datos(client, app):
+    import os
+    poblar_datos_demo()
+    login(client, "ana@uni.edu", "demo123")
+
+    m = Materia.query.filter_by(codigo="MAT101").one()
+    r = client.post(f"/admin/materia/edit/?id={m.id}",
+                    data={"codigo": "MAT101", "nombre": "Cálculo I", "semestre": "1"}, follow_redirects=True)
+    assert r.status_code == 200
+    db.session.expire_all()
+    assert db.session.get(Materia, m.id).nombre == "Cálculo I"
+
+    luis = Usuario.query.filter_by(email="luis@uni.edu").one()
+    client.post(f"/admin/usuario/edit/?id={luis.id}",
+                data={"nombre": "Luis P.", "email": "luis@uni.edu", "nueva_contrasena": "nueva123"})
+    db.session.expire_all()
+    assert db.session.get(Usuario, luis.id).check_password("nueva123")
+
+    a = Apunte.query.first()
+    ruta = os.path.join(app.config["UPLOAD_FOLDER"], a.nombre_almacenado)
+    assert os.path.exists(ruta)
+    client.post("/admin/apunte/delete/", data={"id": a.id})
+    assert db.session.get(Apunte, a.id) is None and not os.path.exists(ruta)
+
+    # borrar un usuario con apuntes, tutorías y comentarios no rompe la base de datos
+    client.post("/admin/usuario/delete/", data={"id": luis.id})
+    db.session.expire_all()
+    assert db.session.get(Usuario, luis.id) is None
+    assert SolicitudTutoria.query.filter(
+        (SolicitudTutoria.solicitante_id == luis.id) | (SolicitudTutoria.tutor_id == luis.id)).count() == 0
+
+    ana = Usuario.query.filter_by(email="ana@uni.edu").one()
+    client.post("/admin/usuario/delete/", data={"id": ana.id})
+    assert db.session.get(Usuario, ana.id) is not None  # no puede borrarse a sí misma

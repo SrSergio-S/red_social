@@ -1,10 +1,11 @@
 import os
 
 from flask import Flask, render_template
+from flask_babel import Babel
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy import event
+from sqlalchemy import event, inspect, text
 from sqlalchemy.engine import Engine
 
 from .config import Config
@@ -15,6 +16,7 @@ login_manager.login_view = "auth.login"
 login_manager.login_message = "Inicia sesión para continuar."
 login_manager.login_message_category = "warning"
 csrf = CSRFProtect()
+babel = Babel()
 
 
 @event.listens_for(Engine, "connect")
@@ -36,6 +38,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+    babel.init_app(app, locale_selector=lambda: "es")  # textos del panel /admin en español
 
     from . import models  # noqa: F401  (registra los modelos)
     from .auth import bp as auth_bp
@@ -45,6 +48,9 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(tutorias_bp)
+
+    from .admin import iniciar_admin
+    iniciar_admin(app)
 
     from .seed import registrar_comandos
     registrar_comandos(app)
@@ -67,12 +73,27 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
+        _actualizar_bd_existente(app)
         if app.config["AUTO_SEED"] and not models.Usuario.query.first():
             from .seed import poblar_datos_demo
             poblar_datos_demo()
             app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
 
     return app
+
+
+def _actualizar_bd_existente(app):
+    """Agrega columnas nuevas a bases de datos creadas con versiones anteriores de la app.
+
+    `db.create_all()` crea tablas que faltan, pero no columnas nuevas en tablas existentes.
+    """
+    columnas = {c["name"] for c in inspect(db.engine).get_columns("usuarios")}
+    if "es_admin" not in columnas:
+        with db.engine.begin() as conn:
+            conn.execute(text("ALTER TABLE usuarios ADD COLUMN es_admin BOOLEAN NOT NULL DEFAULT 0"))
+            # La cuenta de demostración pasa a ser administradora, como en los datos de ejemplo
+            conn.execute(text("UPDATE usuarios SET es_admin = 1 WHERE email = 'ana@uni.edu'"))
+        app.logger.warning("Base de datos actualizada: se agregó la columna usuarios.es_admin.")
 
 
 @login_manager.user_loader

@@ -26,6 +26,9 @@
         {% if current_user.is_authenticated %}
           <li class="nav-item"><a class="btn btn-warning btn-sm me-2 my-1" href="{{ url_for('main.subir_apunte') }}"><i class="bi bi-cloud-upload"></i> Subir</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('tutorias.mis_tutorias') }}"><i class="bi bi-people"></i> Tutorías</a></li>
+          {% if current_user.es_admin %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.index') }}"><i class="bi bi-gear"></i> Admin</a></li>
+          {% endif %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ current_user.nombre.split()[0] }}</a>
             <ul class="dropdown-menu dropdown-menu-end">
