@@ -35,6 +35,7 @@ erDiagram
         int semestre
         text bio
         bool ofrece_tutorias
+        bool es_admin
         datetime fecha_registro
     }
     MATERIAS {

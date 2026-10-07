@@ -21,6 +21,8 @@ personalizada al creador.
   el tutor puede aceptar, rechazar o marcarla como completada, y el estudiante puede cancelarla.
 - **Búsqueda** por texto, tipo y etiquetas; **ranking** de contribuidores por calificación promedio.
 - **Inicio personalizado** con los apuntes nuevos de las materias que sigues.
+- **Panel de administración** (`/admin`) para ver, buscar, editar, eliminar y exportar a CSV
+  los datos de todas las tablas desde el navegador.
 
 | Apunte con calificaciones y metadatos | Foro de la materia | Tutorías |
 |---|---|---|
@@ -61,7 +63,7 @@ Usuarios de prueba (contraseña `demo123` para todos):
 
 | Correo | Perfil |
 |---|---|
-| ana@uni.edu | Ing. de Sistemas, tiene una tutoría pendiente por responder |
+| ana@uni.edu | **Administradora** (enlace *Admin* en el menú) · tiene una tutoría pendiente |
 | luis@uni.edu | Ing. de Sistemas |
 | maria@uni.edu | Ing. Industrial |
 | carlos@uni.edu | Ing. de Sistemas |
@@ -83,9 +85,23 @@ Usuarios de prueba (contraseña `demo123` para todos):
    (o ve a la pestaña **Ports** y abre la dirección del puerto 5000).
 4. Entra con `ana@uni.edu` / `demo123`.
 
-Si ya tenías el Codespace abierto antes de esta actualización, ejecuta `git pull` y luego
-`flask --app run seed` para recrear los datos de ejemplo.
+Si ya tenías el Codespace abierto, para traer la última versión ejecuta
+`git pull` y `pip install -r requirements.txt` antes de volver a iniciar la app.
 > La app no necesita internet para verse bien: Bootstrap viene incluido en `app/static/vendor/`.
+
+### Panel de administración
+
+Entra con `ana@uni.edu` / `demo123` y pulsa **Admin** en el menú (o abre `/admin`). Desde ahí puedes:
+
+- Editar cualquier registro (usuarios, materias, apuntes, etiquetas, calificaciones, comentarios, tutorías).
+- Cambiar contraseñas (campo *Nueva contraseña* al editar un usuario) y dar o quitar permisos de administrador.
+- Buscar, filtrar, editar rápido con un clic en los campos subrayados, borrar varios a la vez y exportar a CSV.
+
+Solo entran los usuarios marcados como administradores. Para convertir a otro usuario en administrador:
+
+```bash
+flask --app run hacer-admin correo@ejemplo.com
+```
 
 ### Comandos útiles
 
@@ -93,6 +109,7 @@ Si ya tenías el Codespace abierto antes de esta actualización, ejecuta `git pu
 |---|---|
 | `flask --app run seed` | Borra la base de datos y la llena con datos de ejemplo |
 | `flask --app run reset-db` | Borra todos los datos (al volver a arrancar se cargan los de ejemplo, salvo con `AUTO_SEED=0`) |
+| `flask --app run hacer-admin CORREO` | Da acceso al panel `/admin` a ese usuario |
 | `flask --app run run --debug` | Inicia con recarga automática al editar código |
 | `pytest` | Ejecuta las pruebas automáticas |
 
@@ -114,6 +131,7 @@ red_social/
 │   ├── auth.py            # Registro, login y logout
 │   ├── main.py            # Materias, apuntes, calificaciones, likes, foros, perfiles, ranking
 │   ├── tutorias.py        # Solicitudes de tutoría y sus estados
+│   ├── admin.py           # Panel de administración (/admin)
 │   ├── seed.py            # Comandos seed / reset-db y datos de ejemplo
 │   ├── templates/         # Páginas HTML (Jinja2 + Bootstrap 5)
 │   └── static/            # CSS y Bootstrap local
@@ -124,6 +142,7 @@ red_social/
 ## Tecnologías
 
 Flask 3 · Flask-SQLAlchemy (ORM) · Flask-Login (sesiones) · Flask-WTF (protección CSRF) ·
+Flask-Admin (panel de administración) ·
 SQLite · Bootstrap 5 · pytest.
 
 Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir la variable de entorno
