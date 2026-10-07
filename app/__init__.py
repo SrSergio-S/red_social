@@ -52,8 +52,10 @@ def create_app(config_class=Config):
     from .admin import iniciar_admin
     iniciar_admin(app)
 
+    from .datos import registrar_comandos_datos
     from .seed import registrar_comandos
     registrar_comandos(app)
+    registrar_comandos_datos(app)
 
     @app.template_filter("fecha")
     def formato_fecha(valor, formato="%d/%m/%Y %H:%M"):
@@ -75,9 +77,14 @@ def create_app(config_class=Config):
         db.create_all()
         _actualizar_bd_existente(app)
         if app.config["AUTO_SEED"] and not models.Usuario.query.first():
-            from .seed import poblar_datos_demo
-            poblar_datos_demo()
-            app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
+            from .datos import cargar_datos, hay_datos_guardados
+            if hay_datos_guardados():
+                cargar_datos()
+                app.logger.warning("Base de datos vacía: se cargaron los datos guardados en la carpeta datos/.")
+            else:
+                from .seed import poblar_datos_demo
+                poblar_datos_demo()
+                app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
 
     return app
 
