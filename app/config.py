@@ -12,6 +12,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", os.path.join(INSTANCE_DIR, "uploads"))
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20 MB por archivo
+    # Si la base de datos está vacía al arrancar, se cargan los datos de ejemplo
+    AUTO_SEED = os.environ.get("AUTO_SEED", "1") != "0"
     EXTENSIONES_PERMITIDAS = {
         "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx",
         "txt", "md", "png", "jpg", "jpeg", "zip",
@@ -21,4 +23,5 @@ class Config:
 class TestConfig(Config):
     TESTING = True
     WTF_CSRF_ENABLED = False
+    AUTO_SEED = False
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"

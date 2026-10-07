@@ -68,6 +68,23 @@ Usuarios de prueba (contraseña `demo123` para todos):
 | sofia@uni.edu | Matemáticas |
 
 > Si no tienes Git, en GitHub usa **Code → Download ZIP**, descomprime y sigue desde el paso 2.
+> Si la base de datos está vacía al arrancar, la app carga sola los datos de ejemplo
+> (puedes desactivarlo con la variable de entorno `AUTO_SEED=0`).
+
+### En GitHub Codespaces
+
+1. En el repositorio: **Code → Codespaces → Create codespace on main**.
+2. En la terminal del Codespace:
+   ```bash
+   pip install -r requirements.txt
+   flask --app run run
+   ```
+3. Aparecerá un aviso de "puerto 5000 disponible": pulsa **Open in Browser**
+   (o ve a la pestaña **Ports** y abre la dirección del puerto 5000).
+4. Entra con `ana@uni.edu` / `demo123`.
+
+Si ya tenías el Codespace abierto antes de esta actualización, ejecuta `git pull` y luego
+`flask --app run seed` para recrear los datos de ejemplo.
 > La app no necesita internet para verse bien: Bootstrap viene incluido en `app/static/vendor/`.
 
 ### Comandos útiles
@@ -75,7 +92,7 @@ Usuarios de prueba (contraseña `demo123` para todos):
 | Comando | Qué hace |
 |---|---|
 | `flask --app run seed` | Borra la base de datos y la llena con datos de ejemplo |
-| `flask --app run reset-db` | Borra la base de datos y la deja vacía |
+| `flask --app run reset-db` | Borra todos los datos (al volver a arrancar se cargan los de ejemplo, salvo con `AUTO_SEED=0`) |
 | `flask --app run run --debug` | Inicia con recarga automática al editar código |
 | `pytest` | Ejecuta las pruebas automáticas |
 

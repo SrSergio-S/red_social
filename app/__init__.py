@@ -67,6 +67,10 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
+        if app.config["AUTO_SEED"] and not models.Usuario.query.first():
+            from .seed import poblar_datos_demo
+            poblar_datos_demo()
+            app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
 
     return app
 
