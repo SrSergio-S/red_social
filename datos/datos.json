@@ -1,0 +1,1161 @@
+{
+ "version": 1,
+ "tablas": {
+  "etiquetas": [
+   {
+    "id": 1,
+    "nombre": "limites"
+   },
+   {
+    "id": 2,
+    "nombre": "resumen"
+   },
+   {
+    "id": 3,
+    "nombre": "parcial1"
+   },
+   {
+    "id": 4,
+    "nombre": "python"
+   },
+   {
+    "id": 5,
+    "nombre": "estructuras"
+   },
+   {
+    "id": 6,
+    "nombre": "derivadas"
+   },
+   {
+    "id": 7,
+    "nombre": "formulario"
+   },
+   {
+    "id": 8,
+    "nombre": "distribuciones"
+   },
+   {
+    "id": 9,
+    "nombre": "matrices"
+   },
+   {
+    "id": 10,
+    "nombre": "ejercicios"
+   },
+   {
+    "id": 11,
+    "nombre": "vectores"
+   },
+   {
+    "id": 12,
+    "nombre": "teoria"
+   },
+   {
+    "id": 13,
+    "nombre": "sql"
+   },
+   {
+    "id": 14,
+    "nombre": "join"
+   },
+   {
+    "id": 15,
+    "nombre": "normalizacion"
+   },
+   {
+    "id": 16,
+    "nombre": "parcial2"
+   },
+   {
+    "id": 17,
+    "nombre": "simplex"
+   },
+   {
+    "id": 18,
+    "nombre": "optimizacion"
+   }
+  ],
+  "materias": [
+   {
+    "id": 1,
+    "codigo": "MAT101",
+    "nombre": "Cálculo Diferencial",
+    "descripcion": "Límites, derivadas y aplicaciones.",
+    "carrera": "Ciencias Básicas",
+    "semestre": 1
+   },
+   {
+    "id": 2,
+    "codigo": "MAT201",
+    "nombre": "Álgebra Lineal",
+    "descripcion": "Matrices, espacios vectoriales y transformaciones.",
+    "carrera": "Ciencias Básicas",
+    "semestre": 2
+   },
+   {
+    "id": 3,
+    "codigo": "SIS210",
+    "nombre": "Programación en Python",
+    "descripcion": "Fundamentos de programación con Python.",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 2
+   },
+   {
+    "id": 4,
+    "codigo": "SIS305",
+    "nombre": "Bases de Datos",
+    "descripcion": "Modelo relacional, SQL y normalización.",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 4
+   },
+   {
+    "id": 5,
+    "codigo": "EST220",
+    "nombre": "Estadística y Probabilidad",
+    "descripcion": "Distribuciones, inferencia y regresión.",
+    "carrera": "Ciencias Básicas",
+    "semestre": 3
+   },
+   {
+    "id": 6,
+    "codigo": "IND330",
+    "nombre": "Investigación de Operaciones",
+    "descripcion": "Programación lineal y modelos de optimización.",
+    "carrera": "Ingeniería Industrial",
+    "semestre": 5
+   }
+  ],
+  "usuarios": [
+   {
+    "id": 1,
+    "nombre": "Sergio Sandoval",
+    "email": "sergio@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$CyGXTKHff6TL07Ad$29a721655a0ff09fc1c1c09f1368a47aaed318c438a6a6ed3f7f73bc6428e66de6d8c2e6f041819128cc59ea1ebff096043bb87993a2712b0158b4faa4453fb1",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 6,
+    "bio": "Me encantan las bases de datos y explicar SQL.",
+    "ofrece_tutorias": true,
+    "es_admin": true,
+    "fecha_registro": "2026-10-07T19:00:28.716824"
+   },
+   {
+    "id": 2,
+    "nombre": "Luis Pérez",
+    "email": "luis@uni.edu",
+    "password_hash": "scrypt:32768:8:1$hpDoIOl8GD4E7qH0$e1acaee00f63e8399fd3a1965397bf7292b889d1fa817ca4912959d19d91986922c22acf35c54358950f596c80e46aaec68ab34d650ac34f7907642c6f7dd340",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 4,
+    "bio": "Monitor de Cálculo. Pregunta sin miedo.",
+    "ofrece_tutorias": true,
+    "es_admin": false,
+    "fecha_registro": "2026-10-07T19:00:28.716828"
+   },
+   {
+    "id": 3,
+    "nombre": "María Gómez",
+    "email": "maria@uni.edu",
+    "password_hash": "scrypt:32768:8:1$AcPtnyxRifLrGuBG$fb36dc6696b8c497f309263c91727829392f724b7117d552c7dbea636dbded964da9871b2765b249def5e0e1f0f632297418b4cb58f257618e987b96dce2b22b",
+    "carrera": "Ingeniería Industrial",
+    "semestre": 5,
+    "bio": "Resúmenes con mapas mentales.",
+    "ofrece_tutorias": true,
+    "es_admin": false,
+    "fecha_registro": "2026-10-07T19:00:28.716830"
+   },
+   {
+    "id": 4,
+    "nombre": "Carlos Ruiz",
+    "email": "carlos@uni.edu",
+    "password_hash": "scrypt:32768:8:1$hoOAMlnHDwfRTxPC$19c6466784da568ab630a5d250c9e6d3078e9c6f38649aabee41fe70c547ccf0bf01f76471bb0a6f2c37eba1b4be8773777ef7ee02246c65b3984c8c2635dadd",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 2,
+    "bio": "Aprendiendo Python día a día.",
+    "ofrece_tutorias": true,
+    "es_admin": false,
+    "fecha_registro": "2026-10-07T19:00:28.716831"
+   },
+   {
+    "id": 5,
+    "nombre": "Sofía Díaz",
+    "email": "sofia@uni.edu",
+    "password_hash": "scrypt:32768:8:1$HX5T4JNkCNq0XJu2$7a1357922e6ae056f1511b764fc22394dadc5b8e9c90178d3f237f15b6ebc43400eddb904a5a11d344227c65ea023165e20c45b39454896088092e64201d0283",
+    "carrera": "Matemáticas",
+    "semestre": 7,
+    "bio": "Tutorías de álgebra y estadística.",
+    "ofrece_tutorias": true,
+    "es_admin": false,
+    "fecha_registro": "2026-10-07T19:00:28.716832"
+   }
+  ],
+  "apuntes": [
+   {
+    "id": 1,
+    "titulo": "Resumen de límites y continuidad",
+    "descripcion": "Material de Cálculo Diferencial.",
+    "tipo": "Resumen",
+    "fecha_subida": "2026-09-27T19:00:28.698666",
+    "nombre_original": "resumen_de_limites_y_continuidad.md",
+    "nombre_almacenado": "0891a29a723b4aeb8d0a07bbae4adbba.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 75,
+    "hash_sha256": "74f5ce644f37f9151628a0af1d4ec1a711b6f27157ca46a77474a4380ffb97af",
+    "autor_id": 2,
+    "materia_id": 1
+   },
+   {
+    "id": 2,
+    "titulo": "Parcial 1 resuelto (2025-2)",
+    "descripcion": "Material de Programación en Python.",
+    "tipo": "Examen resuelto",
+    "fecha_subida": "2026-10-02T19:00:28.704113",
+    "nombre_original": "parcial_1_resuelto_2025_2.md",
+    "nombre_almacenado": "4447d3aaf29e4c56ba38e2277e16b0f2.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 43,
+    "hash_sha256": "49da0044c55d3183ea5bd805b144a5a323cbbd6c61c724f3b8ede4d81d050659",
+    "autor_id": 4,
+    "materia_id": 3
+   },
+   {
+    "id": 3,
+    "titulo": "Guía de listas y diccionarios",
+    "descripcion": "Material de Programación en Python.",
+    "tipo": "Guía",
+    "fecha_subida": "2026-10-01T19:00:28.703840",
+    "nombre_original": "guia_de_listas_y_diccionarios.md",
+    "nombre_almacenado": "6d20a4cbd0614618942af45ab739ffda.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 74,
+    "hash_sha256": "490893da98b19eec809f4fa0b254797893ca0ffea354f6ed7efc221bb438de8a",
+    "autor_id": 1,
+    "materia_id": 3
+   },
+   {
+    "id": 4,
+    "titulo": "Tabla de derivadas",
+    "descripcion": "Material de Cálculo Diferencial.",
+    "tipo": "Guía",
+    "fecha_subida": "2026-09-28T19:00:28.702878",
+    "nombre_original": "tabla_de_derivadas.md",
+    "nombre_almacenado": "8344e91e202246c3a7cb49b2111e352b.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 55,
+    "hash_sha256": "19731456570d7f4d9fa6082a581ab48b1da71eef25769885f4fc86b8a43179df",
+    "autor_id": 2,
+    "materia_id": 1
+   },
+   {
+    "id": 5,
+    "titulo": "Formulario de distribuciones",
+    "descripcion": "Material de Estadística y Probabilidad.",
+    "tipo": "Guía",
+    "fecha_subida": "2026-10-05T19:00:28.704948",
+    "nombre_original": "formulario_de_distribuciones.md",
+    "nombre_almacenado": "5c66f1345bab4d23848501346e7f4bd4.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 71,
+    "hash_sha256": "c757ee1792497706b0a607b65db19865ecf1649170a4150d94447c72599db301",
+    "autor_id": 5,
+    "materia_id": 5
+   },
+   {
+    "id": 6,
+    "titulo": "Ejercicios resueltos de matrices",
+    "descripcion": "Material de Álgebra Lineal.",
+    "tipo": "Ejercicios",
+    "fecha_subida": "2026-09-29T19:00:28.703266",
+    "nombre_original": "ejercicios_resueltos_de_matrices.md",
+    "nombre_almacenado": "dddcec667cef4eb7a581853caab67817.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 48,
+    "hash_sha256": "492e64ffa48e0bd421c4b05b0363470b6ff9de432f1d18ddc03a0cb22ef00583",
+    "autor_id": 5,
+    "materia_id": 2
+   },
+   {
+    "id": 7,
+    "titulo": "Apuntes de clase: espacios vectoriales",
+    "descripcion": "Material de Álgebra Lineal.",
+    "tipo": "Apuntes",
+    "fecha_subida": "2026-09-30T19:00:28.703556",
+    "nombre_original": "apuntes_de_clase_espacios_vectoriales.md",
+    "nombre_almacenado": "74723566327642db94c567b3c98372fd.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 61,
+    "hash_sha256": "802e45e017aa0295f2d52a4a6316d908814a1aa2516887742818f1c7154b0fa7",
+    "autor_id": 5,
+    "materia_id": 2
+   },
+   {
+    "id": 8,
+    "titulo": "Normalización 1FN, 2FN, 3FN",
+    "descripcion": "Material de Bases de Datos.",
+    "tipo": "Resumen",
+    "fecha_subida": "2026-10-03T19:00:28.704395",
+    "nombre_original": "normalizacion_1fn_2fn_3fn.md",
+    "nombre_almacenado": "429747de97b54903831b2d6a73243559.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 89,
+    "hash_sha256": "f370e25f50b37d67c1bf0c770c88d65e51ba96755940cdd794266a36c3518a92",
+    "autor_id": 1,
+    "materia_id": 4
+   },
+   {
+    "id": 9,
+    "titulo": "Consultas SQL con JOIN",
+    "descripcion": "Material de Bases de Datos.",
+    "tipo": "Ejercicios",
+    "fecha_subida": "2026-10-04T19:00:28.704675",
+    "nombre_original": "consultas_sql_con_join.md",
+    "nombre_almacenado": "99213415fcc34df29bd8cc43770033fc.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 81,
+    "hash_sha256": "5787b84d53c41a86dc09aeacdaf481fbd6bd85c43bfb9be1b72af6189a0224e1",
+    "autor_id": 1,
+    "materia_id": 4
+   },
+   {
+    "id": 10,
+    "titulo": "Método simplex paso a paso",
+    "descripcion": "Material de Investigación de Operaciones.",
+    "tipo": "Apuntes",
+    "fecha_subida": "2026-10-06T19:00:28.705202",
+    "nombre_original": "metodo_simplex_paso_a_paso.md",
+    "nombre_almacenado": "19405ea0493b4001b8019b17837d362e.md",
+    "extension": "md",
+    "mimetype": "text/markdown",
+    "tamano_bytes": 79,
+    "hash_sha256": "959c9e552bc07a74a609678bafc8254edd94dc6c6026490e94dd059f3ad0760d",
+    "autor_id": 3,
+    "materia_id": 6
+   }
+  ],
+  "seguimientos": [
+   {
+    "usuario_id": 1,
+    "materia_id": 1,
+    "fecha": "2026-10-07T19:00:28.718348"
+   },
+   {
+    "usuario_id": 1,
+    "materia_id": 3,
+    "fecha": "2026-10-07T19:00:28.718349"
+   },
+   {
+    "usuario_id": 1,
+    "materia_id": 4,
+    "fecha": "2026-10-07T19:00:28.718351"
+   },
+   {
+    "usuario_id": 1,
+    "materia_id": 5,
+    "fecha": "2026-10-07T19:00:28.718350"
+   },
+   {
+    "usuario_id": 1,
+    "materia_id": 6,
+    "fecha": "2026-10-07T19:00:28.718349"
+   },
+   {
+    "usuario_id": 2,
+    "materia_id": 1,
+    "fecha": "2026-10-07T19:00:28.718343"
+   },
+   {
+    "usuario_id": 2,
+    "materia_id": 5,
+    "fecha": "2026-10-07T19:00:28.718344"
+   },
+   {
+    "usuario_id": 2,
+    "materia_id": 6,
+    "fecha": "2026-10-07T19:00:28.718343"
+   },
+   {
+    "usuario_id": 3,
+    "materia_id": 1,
+    "fecha": "2026-10-07T19:00:28.718352"
+   },
+   {
+    "usuario_id": 3,
+    "materia_id": 3,
+    "fecha": "2026-10-07T19:00:28.718354"
+   },
+   {
+    "usuario_id": 3,
+    "materia_id": 4,
+    "fecha": "2026-10-07T19:00:28.718352"
+   },
+   {
+    "usuario_id": 3,
+    "materia_id": 5,
+    "fecha": "2026-10-07T19:00:28.718353"
+   },
+   {
+    "usuario_id": 3,
+    "materia_id": 6,
+    "fecha": "2026-10-07T19:00:28.718354"
+   },
+   {
+    "usuario_id": 4,
+    "materia_id": 1,
+    "fecha": "2026-10-07T19:00:28.718347"
+   },
+   {
+    "usuario_id": 4,
+    "materia_id": 3,
+    "fecha": "2026-10-07T19:00:28.718347"
+   },
+   {
+    "usuario_id": 4,
+    "materia_id": 5,
+    "fecha": "2026-10-07T19:00:28.718345"
+   },
+   {
+    "usuario_id": 4,
+    "materia_id": 6,
+    "fecha": "2026-10-07T19:00:28.718346"
+   },
+   {
+    "usuario_id": 5,
+    "materia_id": 1,
+    "fecha": "2026-10-07T19:00:28.718341"
+   },
+   {
+    "usuario_id": 5,
+    "materia_id": 2,
+    "fecha": "2026-10-07T19:00:28.718336"
+   },
+   {
+    "usuario_id": 5,
+    "materia_id": 4,
+    "fecha": "2026-10-07T19:00:28.718340"
+   },
+   {
+    "usuario_id": 5,
+    "materia_id": 5,
+    "fecha": "2026-10-07T19:00:28.718339"
+   },
+   {
+    "usuario_id": 5,
+    "materia_id": 6,
+    "fecha": "2026-10-07T19:00:28.718342"
+   }
+  ],
+  "apunte_etiquetas": [
+   {
+    "apunte_id": 1,
+    "etiqueta_id": 1
+   },
+   {
+    "apunte_id": 1,
+    "etiqueta_id": 2
+   },
+   {
+    "apunte_id": 1,
+    "etiqueta_id": 3
+   },
+   {
+    "apunte_id": 2,
+    "etiqueta_id": 3
+   },
+   {
+    "apunte_id": 2,
+    "etiqueta_id": 4
+   },
+   {
+    "apunte_id": 3,
+    "etiqueta_id": 4
+   },
+   {
+    "apunte_id": 3,
+    "etiqueta_id": 5
+   },
+   {
+    "apunte_id": 4,
+    "etiqueta_id": 6
+   },
+   {
+    "apunte_id": 4,
+    "etiqueta_id": 7
+   },
+   {
+    "apunte_id": 5,
+    "etiqueta_id": 7
+   },
+   {
+    "apunte_id": 5,
+    "etiqueta_id": 8
+   },
+   {
+    "apunte_id": 6,
+    "etiqueta_id": 9
+   },
+   {
+    "apunte_id": 6,
+    "etiqueta_id": 10
+   },
+   {
+    "apunte_id": 7,
+    "etiqueta_id": 11
+   },
+   {
+    "apunte_id": 7,
+    "etiqueta_id": 12
+   },
+   {
+    "apunte_id": 8,
+    "etiqueta_id": 13
+   },
+   {
+    "apunte_id": 8,
+    "etiqueta_id": 15
+   },
+   {
+    "apunte_id": 8,
+    "etiqueta_id": 16
+   },
+   {
+    "apunte_id": 9,
+    "etiqueta_id": 13
+   },
+   {
+    "apunte_id": 9,
+    "etiqueta_id": 14
+   },
+   {
+    "apunte_id": 10,
+    "etiqueta_id": 17
+   },
+   {
+    "apunte_id": 10,
+    "etiqueta_id": 18
+   }
+  ],
+  "calificaciones": [
+   {
+    "id": 1,
+    "usuario_id": 1,
+    "apunte_id": 1,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725536"
+   },
+   {
+    "id": 2,
+    "usuario_id": 5,
+    "apunte_id": 1,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725539"
+   },
+   {
+    "id": 3,
+    "usuario_id": 3,
+    "apunte_id": 1,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725540"
+   },
+   {
+    "id": 4,
+    "usuario_id": 1,
+    "apunte_id": 4,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725541"
+   },
+   {
+    "id": 5,
+    "usuario_id": 4,
+    "apunte_id": 4,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725542"
+   },
+   {
+    "id": 6,
+    "usuario_id": 3,
+    "apunte_id": 4,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725543"
+   },
+   {
+    "id": 7,
+    "usuario_id": 1,
+    "apunte_id": 6,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725543"
+   },
+   {
+    "id": 8,
+    "usuario_id": 1,
+    "apunte_id": 7,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725544"
+   },
+   {
+    "id": 9,
+    "usuario_id": 2,
+    "apunte_id": 7,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725545"
+   },
+   {
+    "id": 10,
+    "usuario_id": 3,
+    "apunte_id": 3,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725545"
+   },
+   {
+    "id": 11,
+    "usuario_id": 2,
+    "apunte_id": 3,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725546"
+   },
+   {
+    "id": 12,
+    "usuario_id": 3,
+    "apunte_id": 2,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725547"
+   },
+   {
+    "id": 13,
+    "usuario_id": 5,
+    "apunte_id": 8,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725547"
+   },
+   {
+    "id": 14,
+    "usuario_id": 3,
+    "apunte_id": 8,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725552"
+   },
+   {
+    "id": 15,
+    "usuario_id": 4,
+    "apunte_id": 9,
+    "estrellas": 3,
+    "fecha": "2026-10-07T19:00:28.725552"
+   },
+   {
+    "id": 16,
+    "usuario_id": 2,
+    "apunte_id": 9,
+    "estrellas": 5,
+    "fecha": "2026-10-07T20:32:32.806300"
+   },
+   {
+    "id": 17,
+    "usuario_id": 5,
+    "apunte_id": 9,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725554"
+   },
+   {
+    "id": 18,
+    "usuario_id": 3,
+    "apunte_id": 9,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725554"
+   },
+   {
+    "id": 19,
+    "usuario_id": 1,
+    "apunte_id": 5,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725555"
+   },
+   {
+    "id": 20,
+    "usuario_id": 3,
+    "apunte_id": 5,
+    "estrellas": 4,
+    "fecha": "2026-10-07T19:00:28.725556"
+   },
+   {
+    "id": 21,
+    "usuario_id": 4,
+    "apunte_id": 5,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725556"
+   },
+   {
+    "id": 22,
+    "usuario_id": 4,
+    "apunte_id": 10,
+    "estrellas": 5,
+    "fecha": "2026-10-07T19:00:28.725557"
+   }
+  ],
+  "comentarios": [
+   {
+    "id": 1,
+    "contenido": "Me salvó el parcial 🙌",
+    "fecha": "2026-10-07T19:00:28.724223",
+    "autor_id": 4,
+    "apunte_id": 1,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 2,
+    "contenido": "Me salvó el parcial 🙌",
+    "fecha": "2026-10-07T19:00:28.724226",
+    "autor_id": 3,
+    "apunte_id": 4,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 3,
+    "contenido": "Me salvó el parcial 🙌",
+    "fecha": "2026-10-07T19:00:28.724227",
+    "autor_id": 1,
+    "apunte_id": 7,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 4,
+    "contenido": "¡Muy claro, gracias!",
+    "fecha": "2026-10-07T19:00:28.724228",
+    "autor_id": 3,
+    "apunte_id": 3,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 5,
+    "contenido": "Excelente resumen, muy bien organizado.",
+    "fecha": "2026-10-07T19:00:28.724228",
+    "autor_id": 3,
+    "apunte_id": 2,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 6,
+    "contenido": "Me salvó el parcial 🙌",
+    "fecha": "2026-10-07T19:00:28.724229",
+    "autor_id": 5,
+    "apunte_id": 8,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 7,
+    "contenido": "Excelente resumen, muy bien organizado.",
+    "fecha": "2026-10-07T19:00:28.724230",
+    "autor_id": 5,
+    "apunte_id": 9,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 8,
+    "contenido": "Me salvó el parcial 🙌",
+    "fecha": "2026-10-07T19:00:28.724231",
+    "autor_id": 2,
+    "apunte_id": 5,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 9,
+    "contenido": "¿Alguien tiene más ejercicios de este tema?",
+    "fecha": "2026-10-07T19:00:28.724231",
+    "autor_id": 1,
+    "apunte_id": 10,
+    "materia_id": null,
+    "padre_id": null
+   },
+   {
+    "id": 10,
+    "contenido": "¿Alguien arma grupo de estudio para el parcial del viernes?",
+    "fecha": "2026-10-07T19:00:28.724232",
+    "autor_id": 4,
+    "apunte_id": null,
+    "materia_id": 1,
+    "padre_id": null
+   },
+   {
+    "id": 11,
+    "contenido": "¿Qué temas entran en el segundo corte?",
+    "fecha": "2026-10-07T19:00:28.724233",
+    "autor_id": 3,
+    "apunte_id": null,
+    "materia_id": 4,
+    "padre_id": null
+   },
+   {
+    "id": 12,
+    "contenido": "Normalización y SQL avanzado (subconsultas y vistas).",
+    "fecha": "2026-10-07T19:00:28.724233",
+    "autor_id": 1,
+    "apunte_id": null,
+    "materia_id": 4,
+    "padre_id": null
+   },
+   {
+    "id": 13,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730244",
+    "autor_id": 2,
+    "apunte_id": 1,
+    "materia_id": null,
+    "padre_id": 1
+   },
+   {
+    "id": 14,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730247",
+    "autor_id": 2,
+    "apunte_id": 4,
+    "materia_id": null,
+    "padre_id": 2
+   },
+   {
+    "id": 15,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730249",
+    "autor_id": 5,
+    "apunte_id": 7,
+    "materia_id": null,
+    "padre_id": 3
+   },
+   {
+    "id": 16,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730250",
+    "autor_id": 1,
+    "apunte_id": 3,
+    "materia_id": null,
+    "padre_id": 4
+   },
+   {
+    "id": 17,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730252",
+    "autor_id": 4,
+    "apunte_id": 2,
+    "materia_id": null,
+    "padre_id": 5
+   },
+   {
+    "id": 18,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730253",
+    "autor_id": 1,
+    "apunte_id": 8,
+    "materia_id": null,
+    "padre_id": 6
+   },
+   {
+    "id": 19,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730255",
+    "autor_id": 1,
+    "apunte_id": 9,
+    "materia_id": null,
+    "padre_id": 7
+   },
+   {
+    "id": 20,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730256",
+    "autor_id": 5,
+    "apunte_id": 5,
+    "materia_id": null,
+    "padre_id": 8
+   },
+   {
+    "id": 21,
+    "contenido": "¡Gracias por comentar! 😊",
+    "fecha": "2026-10-07T19:00:28.730258",
+    "autor_id": 3,
+    "apunte_id": 10,
+    "materia_id": null,
+    "padre_id": 9
+   }
+  ],
+  "descargas": [
+   {
+    "id": 1,
+    "usuario_id": 1,
+    "apunte_id": 1,
+    "fecha": "2026-10-07T19:00:28.726970"
+   },
+   {
+    "id": 2,
+    "usuario_id": 5,
+    "apunte_id": 1,
+    "fecha": "2026-10-07T19:00:28.726973"
+   },
+   {
+    "id": 3,
+    "usuario_id": 3,
+    "apunte_id": 1,
+    "fecha": "2026-10-07T19:00:28.726974"
+   },
+   {
+    "id": 4,
+    "usuario_id": 1,
+    "apunte_id": 4,
+    "fecha": "2026-10-07T19:00:28.726975"
+   },
+   {
+    "id": 5,
+    "usuario_id": 4,
+    "apunte_id": 4,
+    "fecha": "2026-10-07T19:00:28.726975"
+   },
+   {
+    "id": 6,
+    "usuario_id": 3,
+    "apunte_id": 4,
+    "fecha": "2026-10-07T19:00:28.726976"
+   },
+   {
+    "id": 7,
+    "usuario_id": 1,
+    "apunte_id": 6,
+    "fecha": "2026-10-07T19:00:28.726977"
+   },
+   {
+    "id": 8,
+    "usuario_id": 1,
+    "apunte_id": 7,
+    "fecha": "2026-10-07T19:00:28.726977"
+   },
+   {
+    "id": 9,
+    "usuario_id": 2,
+    "apunte_id": 7,
+    "fecha": "2026-10-07T19:00:28.726978"
+   },
+   {
+    "id": 10,
+    "usuario_id": 3,
+    "apunte_id": 3,
+    "fecha": "2026-10-07T19:00:28.726979"
+   },
+   {
+    "id": 11,
+    "usuario_id": 2,
+    "apunte_id": 3,
+    "fecha": "2026-10-07T19:00:28.726979"
+   },
+   {
+    "id": 12,
+    "usuario_id": 3,
+    "apunte_id": 2,
+    "fecha": "2026-10-07T19:00:28.726980"
+   },
+   {
+    "id": 13,
+    "usuario_id": 5,
+    "apunte_id": 8,
+    "fecha": "2026-10-07T19:00:28.726981"
+   },
+   {
+    "id": 14,
+    "usuario_id": 3,
+    "apunte_id": 8,
+    "fecha": "2026-10-07T19:00:28.726982"
+   },
+   {
+    "id": 15,
+    "usuario_id": 4,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.726982"
+   },
+   {
+    "id": 16,
+    "usuario_id": 2,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.726983"
+   },
+   {
+    "id": 17,
+    "usuario_id": 5,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.726984"
+   },
+   {
+    "id": 18,
+    "usuario_id": 3,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.726984"
+   },
+   {
+    "id": 19,
+    "usuario_id": 1,
+    "apunte_id": 5,
+    "fecha": "2026-10-07T19:00:28.726985"
+   },
+   {
+    "id": 20,
+    "usuario_id": 3,
+    "apunte_id": 5,
+    "fecha": "2026-10-07T19:00:28.726986"
+   },
+   {
+    "id": 21,
+    "usuario_id": 4,
+    "apunte_id": 5,
+    "fecha": "2026-10-07T19:00:28.726987"
+   },
+   {
+    "id": 22,
+    "usuario_id": 4,
+    "apunte_id": 10,
+    "fecha": "2026-10-07T19:00:28.726987"
+   },
+   {
+    "id": 23,
+    "usuario_id": 2,
+    "apunte_id": 3,
+    "fecha": "2026-10-07T20:33:15.988020"
+   }
+  ],
+  "likes": [
+   {
+    "usuario_id": 1,
+    "apunte_id": 1,
+    "fecha": "2026-10-07T19:00:28.722943"
+   },
+   {
+    "usuario_id": 1,
+    "apunte_id": 4,
+    "fecha": "2026-10-07T19:19:57.625806"
+   },
+   {
+    "usuario_id": 1,
+    "apunte_id": 7,
+    "fecha": "2026-10-07T19:00:28.722950"
+   },
+   {
+    "usuario_id": 1,
+    "apunte_id": 10,
+    "fecha": "2026-10-07T19:19:38.401978"
+   },
+   {
+    "usuario_id": 2,
+    "apunte_id": 3,
+    "fecha": "2026-10-07T19:00:28.722952"
+   },
+   {
+    "usuario_id": 2,
+    "apunte_id": 7,
+    "fecha": "2026-10-07T19:00:28.722951"
+   },
+   {
+    "usuario_id": 2,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.722945"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 1,
+    "fecha": "2026-10-07T19:00:28.722944"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 2,
+    "fecha": "2026-10-07T19:00:28.722948"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 3,
+    "fecha": "2026-10-07T19:00:28.722951"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 5,
+    "fecha": "2026-10-07T19:00:28.722946"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 8,
+    "fecha": "2026-10-07T19:00:28.722949"
+   },
+   {
+    "usuario_id": 3,
+    "apunte_id": 9,
+    "fecha": "2026-10-07T19:00:28.722946"
+   },
+   {
+    "usuario_id": 4,
+    "apunte_id": 4,
+    "fecha": "2026-10-07T19:00:28.722942"
+   },
+   {
+    "usuario_id": 4,
+    "apunte_id": 5,
+    "fecha": "2026-10-07T19:00:28.722947"
+   },
+   {
+    "usuario_id": 5,
+    "apunte_id": 8,
+    "fecha": "2026-10-07T19:00:28.722948"
+   }
+  ],
+  "solicitudes_tutoria": [
+   {
+    "id": 1,
+    "solicitante_id": 4,
+    "tutor_id": 1,
+    "materia_id": 4,
+    "apunte_id": 9,
+    "tema": "Dudas con LEFT JOIN",
+    "mensaje": "¿Podrías explicarme la diferencia entre INNER y LEFT JOIN?",
+    "modalidad": "virtual",
+    "fecha_propuesta": "2026-10-09T19:00:28.709149",
+    "estado": "pendiente",
+    "respuesta_tutor": null,
+    "fecha_creacion": "2026-10-07T19:00:28.728535",
+    "fecha_actualizacion": "2026-10-07T19:00:28.728538"
+   },
+   {
+    "id": 2,
+    "solicitante_id": 3,
+    "tutor_id": 5,
+    "materia_id": 5,
+    "apunte_id": null,
+    "tema": "Prueba de hipótesis",
+    "mensaje": "Necesito repasar para el examen final.",
+    "modalidad": "presencial",
+    "fecha_propuesta": "2026-10-11T19:00:28.709244",
+    "estado": "aceptada",
+    "respuesta_tutor": "¡Claro! Nos vemos en la biblioteca.",
+    "fecha_creacion": "2026-10-07T19:00:28.729202",
+    "fecha_actualizacion": "2026-10-07T19:00:28.729205"
+   },
+   {
+    "id": 3,
+    "solicitante_id": 2,
+    "tutor_id": 1,
+    "materia_id": 3,
+    "apunte_id": 3,
+    "tema": "Comprensión de listas",
+    "mensaje": "No entiendo bien las list comprehensions.",
+    "modalidad": "virtual",
+    "fecha_propuesta": null,
+    "estado": "completada",
+    "respuesta_tutor": "Listo, quedó resuelto.",
+    "fecha_creacion": "2026-10-07T19:00:28.729587",
+    "fecha_actualizacion": "2026-10-07T19:00:28.729589"
+   }
+  ]
+ }
+}
