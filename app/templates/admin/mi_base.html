@@ -1,0 +1,91 @@
+{% extends 'admin/base.html' %}
+{# Diseño propio del panel: menú lateral con iconos, barra superior y contenido en tarjetas.
+   Los estilos están en app/static/css/admin.css #}
+
+{% block title %}{{ admin_view.name }} · ApuntesU Admin{% endblock %}
+
+{% block head_css %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% macro icono(item, defecto='bi-circle') -%}
+  <i class="bi {{ item.get_icon_value() or defecto }}"></i>
+{%- endmacro %}
+
+{% macro enlace(item) -%}
+  <a class="adm-nav-link {{ 'activo' if item.is_active(admin_view) }}" href="{{ item.get_url() }}">
+    {{ icono(item) }}<span>{{ item.name }}</span>
+  </a>
+{%- endmacro %}
+
+{% block page_body %}
+<div class="adm-layout">
+  <aside class="adm-sidebar">
+    <div class="adm-marca">
+      <a href="{{ url_for('admin.index') }}">
+        <span class="adm-logo"><i class="bi bi-journal-bookmark-fill"></i></span>
+        <span>ApuntesU<small>Administración</small></span>
+      </a>
+      <button class="adm-menu-btn d-lg-none" type="button" data-toggle="collapse" data-target="#adm-nav"
+              aria-controls="adm-nav" aria-expanded="false" aria-label="Abrir menú">
+        <i class="bi bi-list"></i>
+      </button>
+    </div>
+
+    <nav id="adm-nav" class="collapse adm-nav">
+      {% for item in admin_view.admin.menu() %}
+        {% if item.is_category() %}
+          {% set hijos = item.get_children() %}
+          {% if hijos %}
+            <div class="adm-seccion">{{ item.name }}</div>
+            {% for hijo in hijos %}{% if hijo.is_accessible() and hijo.is_visible() %}{{ enlace(hijo) }}{% endif %}{% endfor %}
+          {% endif %}
+        {% elif item.is_accessible() and item.is_visible() %}
+          {% if loop.first %}<div class="adm-seccion">General</div>{% endif %}
+          {{ enlace(item) }}
+        {% endif %}
+      {% endfor %}
+
+      <div class="adm-nav-pie">
+        <a class="adm-nav-link" href="{{ url_for('main.inicio') }}"><i class="bi bi-arrow-left-circle"></i><span>Volver a la app</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="adm-principal">
+    <header class="adm-topbar">
+      <div class="adm-titulo">
+        <span class="adm-titulo-icono">{{ icono(admin_view.menu, 'bi-speedometer2') if admin_view.menu else '' }}</span>
+        <div>
+          <h1>{{ admin_view.name }}</h1>
+          {% if admin_view.category %}<div class="adm-migas">{{ admin_view.category }} · {{ admin_view.name }}</div>
+          {% else %}<div class="adm-migas">Panel de administración</div>{% endif %}
+        </div>
+      </div>
+      {% if current_user.is_authenticated %}
+      <div class="adm-usuario">
+        <span class="adm-avatar">{{ current_user.nombre[:1] }}</span>
+        <div class="d-none d-sm-block">
+          <div class="adm-usuario-nombre">{{ current_user.nombre }}</div>
+          <div class="adm-usuario-rol">Administrador</div>
+        </div>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="ml-2">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="adm-icon-btn" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+        </form>
+      </div>
+      {% endif %}
+    </header>
+
+    <main class="adm-contenido">
+      {% block messages %}{{ layout.messages() }}{% endblock %}
+      {% set render_ctx = h.resolve_ctx() %}
+      <div class="{{ '' if admin_view.endpoint == 'admin' else 'adm-tarjeta' }}">
+        {% block body %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

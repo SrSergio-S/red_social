@@ -27,3 +27,4 @@ class TestConfig(Config):
     WTF_CSRF_ENABLED = False
     AUTO_SEED = False
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    DATOS_DIR = os.path.join(INSTANCE_DIR, "no-existe-en-pruebas")  # las pruebas no leen datos/ real
