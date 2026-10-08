@@ -1,25 +1,135 @@
 {% extends admin_base_template %}
 {% block body %}
-<h3 class="mt-3">Panel de administración</h3>
-<p class="text-muted">Desde aquí puedes ver, buscar, crear, editar, eliminar y exportar a CSV los datos de todas las tablas.
-  <a href="{{ url_for('main.inicio') }}">← Volver a la app</a></p>
-<div class="row">
-  {% for nombre, total, vista in conteos %}
-  <div class="col-6 col-md-3 mb-3">
-    <a class="card text-decoration-none h-100" href="{{ url_for(vista) }}">
-      <div class="card-body text-center">
-        <div class="h2 mb-0">{{ total }}</div>
-        <div class="text-muted">{{ nombre }}</div>
-      </div>
-    </a>
+
+<section class="adm-bienvenida">
+  <div>
+    <h2>¡Hola, {{ current_user.nombre.split()[0] }}! 👋</h2>
+    <p>Esto es lo que está pasando en ApuntesU. Desde el menú puedes ver, editar, eliminar y exportar cualquier dato.</p>
   </div>
+  <div class="d-flex flex-wrap" style="gap:.5rem">
+    <a class="btn" href="{{ url_for('materia.create_view') }}"><i class="bi bi-plus-lg"></i> Nueva materia</a>
+    <a class="btn" href="{{ url_for('usuario.create_view') }}"><i class="bi bi-person-plus"></i> Nuevo usuario</a>
+    <a class="btn" href="{{ url_for('main.inicio') }}"><i class="bi bi-box-arrow-up-right"></i> Ver la app</a>
+  </div>
+</section>
+
+{# Indicadores: etiqueta, valor y cambio de los últimos 7 días #}
+<section class="adm-kpis">
+  {% for k in indicadores %}
+  <a class="adm-kpi" href="{{ url_for(k.vista) }}">
+    <span class="adm-kpi-icono {{ k.color }}"><i class="bi {{ k.icono }}"></i></span>
+    <div>
+      <div class="adm-kpi-etiqueta">{{ k.nombre }}</div>
+      <div class="adm-kpi-valor">{{ '{:,}'.format(k.total) }}</div>
+      {% if k.nuevos is not none %}
+        {% if k.nuevos > 0 %}<div class="adm-kpi-delta sube"><i class="bi bi-arrow-up-short"></i>+{{ k.nuevos }} en 7 días</div>
+        {% else %}<div class="adm-kpi-delta">Sin cambios en 7 días</div>{% endif %}
+      {% else %}<div class="adm-kpi-delta">Total registrado</div>{% endif %}
+    </div>
+  </a>
   {% endfor %}
-</div>
-<p class="text-muted small">Calificación promedio de todos los apuntes:
-  {{ '%.1f ★'|format(promedio) if promedio else 'sin calificaciones' }}</p>
-<div class="alert alert-info small">
-  <b>Consejos:</b> los campos con lápiz en las listas se editan con un clic.
-  Para cambiar la contraseña de alguien, edita el usuario y escribe una nueva.
-  Los apuntes nuevos se suben desde la app (botón <i>Subir</i>), porque necesitan un archivo.
-</div>
+</section>
+
+<section class="adm-rejilla mb-3">
+  {# Gráfico 1: apuntes por materia (una serie) #}
+  <div class="adm-panel adm-c7">
+    <div class="adm-panel-cab">
+      <h3>Apuntes por materia</h3>
+      <a href="{{ url_for('materia.index_view') }}">Ver materias →</a>
+    </div>
+    <div class="adm-sub">Las {{ apuntes_por_materia|length }} materias con más material publicado</div>
+    {% set maximo = (apuntes_por_materia|map(attribute=1)|max) if apuntes_por_materia else 0 %}
+    <div class="adm-barras" role="table" aria-label="Apuntes por materia">
+      {% for nombre, total in apuntes_por_materia %}
+      <div class="adm-barra" role="row">
+        <span class="adm-barra-nombre" role="rowheader" title="{{ nombre }}">{{ nombre }}</span>
+        <span class="adm-barra-pista adm-eje" role="cell">
+          <span class="adm-barra-relleno" style="width: {{ (total / maximo * 85) if maximo else 0 }}%"></span>
+          <span class="adm-barra-valor">{{ total }}</span>
+        </span>
+        <span class="adm-barra-tip">{{ nombre }}: {{ total }} apunte{{ '' if total == 1 else 's' }}</span>
+      </div>
+      {% else %}<div class="adm-vacio">Aún no hay materias.</div>{% endfor %}
+    </div>
+  </div>
+
+  {# Gráfico 2: distribución de calificaciones (una serie) #}
+  <div class="adm-panel adm-c5">
+    <div class="adm-panel-cab">
+      <h3>Calificaciones</h3>
+      <a href="{{ url_for('calificacion.index_view') }}">Ver todas →</a>
+    </div>
+    {% set total_votos = distribucion|map(attribute=1)|sum %}
+    <div class="adm-sub">
+      {% if promedio %}Promedio general <b class="adm-estrellas">★ {{ '%.1f'|format(promedio) }}</b> · {{ total_votos }} votos
+      {% else %}Todavía no hay calificaciones{% endif %}
+    </div>
+    {% set maximo_v = distribucion|map(attribute=1)|max %}
+    <div class="adm-barras" role="table" aria-label="Distribución de calificaciones">
+      {% for estrellas, cantidad in distribucion %}
+      <div class="adm-barra" role="row">
+        <span class="adm-barra-nombre" role="rowheader">{{ estrellas }} estrella{{ '' if estrellas == 1 else 's' }}</span>
+        <span class="adm-barra-pista adm-eje" role="cell">
+          <span class="adm-barra-relleno" style="width: {{ (cantidad / maximo_v * 80) if maximo_v else 0 }}%"></span>
+          <span class="adm-barra-valor">{{ cantidad }}</span>
+        </span>
+        <span class="adm-barra-tip">{{ cantidad }} voto{{ '' if cantidad == 1 else 's' }} de {{ estrellas }}★
+          ({{ (cantidad / total_votos * 100)|round|int if total_votos else 0 }}%)</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="adm-rejilla">
+  <div class="adm-panel adm-c4">
+    <div class="adm-panel-cab"><h3>Apuntes recientes</h3><a href="{{ url_for('apunte.index_view') }}">Ver todos →</a></div>
+    <div class="adm-sub">Lo último que subieron los estudiantes</div>
+    <ul class="adm-lista">
+      {% for a in recientes %}
+      <li>
+        <span class="adm-mini-icono ic-verde"><i class="bi bi-file-earmark-text"></i></span>
+        <span class="adm-li-texto">
+          <a class="adm-li-titulo" href="{{ url_for('apunte.edit_view', id=a.id) }}">{{ a.titulo }}</a>
+          <span class="adm-li-meta">{{ a.autor.nombre }} · {{ a.materia.nombre }}</span>
+        </span>
+        {% if a.promedio_estrellas %}<span class="adm-estrellas">★ {{ a.promedio_estrellas }}</span>{% endif %}
+      </li>
+      {% else %}<li class="adm-vacio">No hay apuntes.</li>{% endfor %}
+    </ul>
+  </div>
+
+  <div class="adm-panel adm-c4">
+    <div class="adm-panel-cab"><h3>Tutorías activas</h3><a href="{{ url_for('solicitudtutoria.index_view') }}">Ver todas →</a></div>
+    <div class="adm-sub">Pendientes de respuesta o ya aceptadas</div>
+    <ul class="adm-lista">
+      {% for t in tutorias %}
+      <li>
+        <span class="adm-mini-icono ic-violeta"><i class="bi bi-person-video3"></i></span>
+        <span class="adm-li-texto">
+          <a class="adm-li-titulo" href="{{ url_for('solicitudtutoria.edit_view', id=t.id) }}">{{ t.tema }}</a>
+          <span class="adm-li-meta">{{ t.solicitante.nombre }} → {{ t.tutor.nombre }}</span>
+        </span>
+        <span class="adm-chip chip-{{ t.estado }}">{{ t.estado|capitalize }}</span>
+      </li>
+      {% else %}<li class="adm-vacio">No hay tutorías activas.</li>{% endfor %}
+    </ul>
+  </div>
+
+  <div class="adm-panel adm-c4">
+    <div class="adm-panel-cab"><h3>Últimos comentarios</h3><a href="{{ url_for('comentario.index_view') }}">Ver todos →</a></div>
+    <div class="adm-sub">Para moderar los foros rápidamente</div>
+    <ul class="adm-lista">
+      {% for c in comentarios %}
+      <li>
+        <span class="adm-mini-icono ic-rosa"><i class="bi bi-chat-dots"></i></span>
+        <span class="adm-li-texto">
+          <a class="adm-li-titulo" href="{{ url_for('comentario.edit_view', id=c.id) }}">{{ c.contenido }}</a>
+          <span class="adm-li-meta">{{ c.autor.nombre }} · {{ (c.apunte.titulo if c.apunte else c.materia.nombre) if (c.apunte or c.materia) else '' }}</span>
+        </span>
+      </li>
+      {% else %}<li class="adm-vacio">No hay comentarios.</li>{% endfor %}
+    </ul>
+  </div>
+</section>
 {% endblock %}

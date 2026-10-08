@@ -3,11 +3,12 @@
 Solo pueden entrar los usuarios con `es_admin = True`.
 """
 import os
+from datetime import date, datetime, timedelta
 
 from flask import abort, current_app, redirect, request, url_for
 from flask_admin import Admin, AdminIndexView, expose
-from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.model import typefmt
 from flask_admin.theme import Bootstrap4Theme
 from flask_login import current_user
 from flask_wtf import FlaskForm
@@ -17,7 +18,7 @@ from wtforms.validators import Length, Optional, ValidationError
 
 from . import db
 from .models import (
-    Apunte, Calificacion, Comentario, Descarga, Etiqueta, Materia, SolicitudTutoria, Usuario,
+    Apunte, Calificacion, Comentario, Descarga, Etiqueta, Materia, SolicitudTutoria, Usuario, ahora,
 )
 
 
@@ -51,21 +52,67 @@ class FormularioAdmin(FlaskForm):
         super().__init__(*args, **kwargs)
 
 
+def _fecha_hora(view, valor, nombre):
+    return valor.strftime("%d/%m/%Y %H:%M")
+
+
+def _fecha(view, valor, nombre):
+    return valor.strftime("%d/%m/%Y")
+
+
+FORMATOS_FECHA = {datetime: _fecha_hora, date: _fecha}
+
+
+def _solo_nombre(campo):
+    """Formateador de columna que muestra solo el nombre de la persona relacionada."""
+    def formatear(view, context, model, name):
+        persona = getattr(model, campo)
+        return persona.nombre if persona else ""
+    return formatear
+
+
 class InicioAdmin(AdminIndexView):
     @expose("/")
     def index(self):
-        conteos = [
-            ("Usuarios", Usuario.query.count(), "usuario.index_view"),
-            ("Materias", Materia.query.count(), "materia.index_view"),
-            ("Apuntes", Apunte.query.count(), "apunte.index_view"),
-            ("Etiquetas", Etiqueta.query.count(), "etiqueta.index_view"),
-            ("Calificaciones", Calificacion.query.count(), "calificacion.index_view"),
-            ("Descargas", Descarga.query.count(), "descarga.index_view"),
-            ("Comentarios", Comentario.query.count(), "comentario.index_view"),
-            ("Tutorías", SolicitudTutoria.query.count(), "solicitudtutoria.index_view"),
+        hace_7_dias = ahora() - timedelta(days=7)
+
+        def indicador(nombre, modelo, campo_fecha, vista, icono, color):
+            total = modelo.query.count()
+            nuevos = modelo.query.filter(campo_fecha >= hace_7_dias).count() if campo_fecha is not None else None
+            return {"nombre": nombre, "total": total, "nuevos": nuevos, "vista": vista, "icono": icono, "color": color}
+
+        indicadores = [
+            indicador("Usuarios", Usuario, Usuario.fecha_registro, "usuario.index_view", "bi-people", "ic-indigo"),
+            indicador("Materias", Materia, None, "materia.index_view", "bi-collection", "ic-azul"),
+            indicador("Apuntes", Apunte, Apunte.fecha_subida, "apunte.index_view", "bi-journal-text", "ic-verde"),
+            indicador("Descargas", Descarga, Descarga.fecha, "descarga.index_view", "bi-download", "ic-cian"),
+            indicador("Calificaciones", Calificacion, Calificacion.fecha, "calificacion.index_view", "bi-star", "ic-ambar"),
+            indicador("Comentarios", Comentario, Comentario.fecha, "comentario.index_view", "bi-chat-dots", "ic-rosa"),
+            indicador("Tutorías", SolicitudTutoria, SolicitudTutoria.fecha_creacion, "solicitudtutoria.index_view",
+                      "bi-person-video3", "ic-violeta"),
+            indicador("Etiquetas", Etiqueta, None, "etiqueta.index_view", "bi-tags", "ic-rojo"),
         ]
+
+        apuntes_por_materia = (
+            db.session.query(Materia.nombre, func.count(Apunte.id))
+            .outerjoin(Apunte).group_by(Materia.id)
+            .order_by(func.count(Apunte.id).desc(), Materia.nombre).limit(6).all()
+        )
+        votos = dict(db.session.query(Calificacion.estrellas, func.count()).group_by(Calificacion.estrellas).all())
+        distribucion = [(n, votos.get(n, 0)) for n in range(5, 0, -1)]
         promedio = db.session.query(func.avg(Calificacion.estrellas)).scalar()
-        return self.render("admin/inicio.html", conteos=conteos, promedio=promedio)
+
+        return self.render(
+            "admin/inicio.html",
+            indicadores=indicadores,
+            apuntes_por_materia=apuntes_por_materia,
+            distribucion=distribucion,
+            promedio=promedio,
+            recientes=Apunte.query.order_by(Apunte.fecha_subida.desc()).limit(5).all(),
+            tutorias=(SolicitudTutoria.query.filter(SolicitudTutoria.estado.in_(["pendiente", "aceptada"]))
+                      .order_by(SolicitudTutoria.fecha_creacion.desc()).limit(5).all()),
+            comentarios=Comentario.query.order_by(Comentario.fecha.desc()).limit(5).all(),
+        )
 
     def is_accessible(self):
         return _es_admin()
@@ -78,6 +125,11 @@ class VistaSegura(ModelView):
     """Base de todas las vistas: acceso solo para administradores y protección CSRF."""
 
     form_base_class = FormularioAdmin
+    # Fechas legibles (07/10/2026 19:00) en listas y detalles
+    column_type_formatters = {**typefmt.BASE_FORMATTERS, **FORMATOS_FECHA}
+    column_type_formatters_detail = {**typefmt.DETAIL_FORMATTERS, **FORMATOS_FECHA}
+    # En las tablas, las personas se muestran solo con su nombre (en los formularios se ve también el correo)
+    column_formatters = {campo: _solo_nombre(campo) for campo in ("autor", "usuario", "solicitante", "tutor")}
     page_size = 25
     can_view_details = True
     can_export = True
@@ -227,16 +279,22 @@ class TutoriaAdmin(VistaSegura):
 
 def iniciar_admin(app):
     admin = Admin(
-        app, name="ApuntesU · Admin", index_view=InicioAdmin(name="Resumen", url="/admin"),
-        theme=Bootstrap4Theme(swatch="default"),
+        app, name="ApuntesU · Admin",
+        index_view=InicioAdmin(name="Resumen", url="/admin", menu_icon_type="bi", menu_icon_value="bi-speedometer2"),
+        # Diseño propio: app/templates/admin/mi_base.html + app/static/css/admin.css
+        theme=Bootstrap4Theme(swatch="default", base_template="admin/mi_base.html", fluid=True),
     )
-    admin.add_view(UsuarioAdmin(Usuario, db, name="Usuarios"))
-    admin.add_view(MateriaAdmin(Materia, db, name="Materias"))
-    admin.add_view(ApunteAdmin(Apunte, db, name="Apuntes"))
-    admin.add_view(EtiquetaAdmin(Etiqueta, db, name="Etiquetas"))
-    admin.add_view(CalificacionAdmin(Calificacion, db, name="Calificaciones", category="Interacción"))
-    admin.add_view(DescargaAdmin(Descarga, db, name="Descargas", category="Interacción"))
-    admin.add_view(ComentarioAdmin(Comentario, db, name="Comentarios", category="Interacción"))
-    admin.add_view(TutoriaAdmin(SolicitudTutoria, db, name="Tutorías"))
-    admin.add_link(MenuLink(name="← Volver a la app", url="/"))
+
+    def vista(clase, modelo, nombre, icono, categoria):
+        admin.add_view(clase(modelo, db, name=nombre, category=categoria,
+                             menu_icon_type="bi", menu_icon_value=icono))
+
+    vista(UsuarioAdmin, Usuario, "Usuarios", "bi-people", "Comunidad")
+    vista(TutoriaAdmin, SolicitudTutoria, "Tutorías", "bi-person-video3", "Comunidad")
+    vista(MateriaAdmin, Materia, "Materias", "bi-collection", "Contenido")
+    vista(ApunteAdmin, Apunte, "Apuntes", "bi-journal-text", "Contenido")
+    vista(EtiquetaAdmin, Etiqueta, "Etiquetas", "bi-tags", "Contenido")
+    vista(CalificacionAdmin, Calificacion, "Calificaciones", "bi-star", "Actividad")
+    vista(ComentarioAdmin, Comentario, "Comentarios", "bi-chat-dots", "Actividad")
+    vista(DescargaAdmin, Descarga, "Descargas", "bi-download", "Actividad")
     return admin
