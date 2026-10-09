@@ -2,23 +2,62 @@
 {% from "_macros.html" import estrellas with context %}
 {% block titulo %}Ranking{% endblock %}
 {% block contenido %}
-<h3 class="mb-3"><i class="bi bi-trophy text-warning"></i> Ranking de contribuidores</h3>
-<div class="card shadow-sm">
-<table class="table table-hover mb-0 align-middle">
-  <thead><tr><th>#</th><th>Estudiante</th><th>Carrera</th><th class="text-center">Apuntes</th><th>Calificación promedio</th></tr></thead>
-  <tbody>
-  {% for u, n_apuntes, prom, n_calif in top %}
-    <tr>
-      <td>{% if loop.index <= 3 %}<i class="bi bi-award-fill" style="color: {{ ['#d4af37', '#a8a9ad', '#cd7f32'][loop.index0] }}"></i>{% else %}{{ loop.index }}{% endif %}</td>
-      <td><a href="{{ url_for('main.perfil', usuario_id=u.id) }}">{{ u.nombre }}</a></td>
-      <td class="text-muted small">{{ u.carrera or '' }}</td>
-      <td class="text-center">{{ n_apuntes }}</td>
-      <td>{{ estrellas(prom|round(1), n_calif) if prom else '—' }}</td>
-    </tr>
-  {% else %}
-    <tr><td colspan="5" class="text-muted text-center">Aún no hay apuntes publicados.</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
-</div>
+<section class="saludo mb-4">
+  <h1><i class="bi bi-trophy-fill"></i> Ranking de contribuidores</h1>
+  <p>Los estudiantes cuyos apuntes reciben las mejores calificaciones.</p>
+  <div class="mini-stats">
+    <span class="mini-stat"><b>{{ top|length }}</b> contribuidor{{ '' if top|length == 1 else 'es' }}</span>
+    <span class="mini-stat"><b>{{ top|sum(attribute=1) }}</b> apuntes publicados</span>
+  </div>
+</section>
+
+{% if not top %}
+  <div class="vacio"><i class="bi bi-trophy"></i>Aún no hay apuntes publicados.<br>
+    {% if current_user.is_authenticated %}
+      <a class="btn btn-primary btn-sm mt-3" href="{{ url_for('main.subir_apunte') }}">Sé el primero en subir uno</a>
+    {% endif %}</div>
+{% else %}
+  {# Podio: en computador el 1.º va al centro; en celular se apilan en orden #}
+  <div class="row g-3 mb-4 align-items-end podio">
+    {% for u, n_apuntes, prom, n_calif in top[:3] %}
+      {% set orden = [2, 1, 3][loop.index0] %}
+      <div class="col-md-4 order-md-{{ orden }}">
+        <a class="card text-center tarjeta-podio puesto-{{ loop.index }} {{ 'es-yo' if current_user.is_authenticated and current_user.id == u.id }}"
+           href="{{ url_for('main.perfil', usuario_id=u.id) }}">
+          <div class="card-body">
+            <span class="medalla"><i class="bi bi-award-fill"></i> {{ loop.index }}.º</span>
+            <span class="avatar avatar-lg">{{ u.nombre[:1] }}</span>
+            <h2 class="nombre">{{ u.nombre }}{% if current_user.is_authenticated and current_user.id == u.id %} <span class="badge text-bg-primary align-middle">Tú</span>{% endif %}</h2>
+            <div class="text-muted small mb-2">{{ u.carrera or 'Carrera no indicada' }}</div>
+            <div class="mb-2">{{ estrellas(prom|round(1), n_calif) if prom else '<small class="text-muted">Sin calificaciones</small>'|safe }}</div>
+            <span class="badge text-bg-light"><i class="bi bi-journal-text"></i> {{ n_apuntes }} apunte{{ '' if n_apuntes == 1 else 's' }}</span>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if top|length > 3 %}
+    <div class="titulo-seccion"><h2>Resto de la tabla</h2></div>
+    <div class="card">
+      <ul class="lista-ranking">
+        {% for u, n_apuntes, prom, n_calif in top[3:] %}
+          <li class="{{ 'es-yo' if current_user.is_authenticated and current_user.id == u.id }}">
+            <a href="{{ url_for('main.perfil', usuario_id=u.id) }}">
+              <span class="puesto">{{ loop.index + 3 }}</span>
+              <span class="avatar">{{ u.nombre[:1] }}</span>
+              <span class="nombre">{{ u.nombre }}
+                {% if current_user.is_authenticated and current_user.id == u.id %}<span class="badge text-bg-primary ms-1">Tú</span>{% endif %}
+                <br><span class="meta">{{ u.carrera or 'Carrera no indicada' }}</span></span>
+              <span class="apuntes"><b>{{ n_apuntes }}</b> <i class="bi bi-journal-text"></i></span>
+              <span class="calif">{{ estrellas(prom|round(1), n_calif) if prom else '<small class="text-muted">Sin calificaciones</small>'|safe }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <p class="text-muted small mt-3 mb-0"><i class="bi bi-info-circle"></i>
+    Se ordena por la calificación promedio de los apuntes y, en caso de empate, por la cantidad de apuntes.</p>
+{% endif %}
 {% endblock %}
