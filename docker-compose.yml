@@ -10,13 +10,15 @@ services:
     environment:
       # Cambia esta clave (o defínela en un archivo .env junto a este archivo: SECRET_KEY=...)
       SECRET_KEY: ${SECRET_KEY:-cambia-esta-clave-secreta}
+      # Sincronización automática: guarda los cambios en datos/ unos segundos después (AUTO_GUARDAR).
+      # AUTO_SUBIR no funciona dentro del contenedor (no tiene git ni tus credenciales):
+      # sube datos/ desde tu computador o Codespace con git.
+      AUTO_GUARDAR: ${AUTO_GUARDAR:-1}
     volumes:
-      # Base de datos y archivos subidos: se conservan aunque borres o reconstruyas el contenedor
-      - apuntesu_instance:/app/instance
-      # Carpeta datos/ del proyecto: así "guardar-datos" dentro del contenedor la actualiza en tu
-      # computador y luego puedes subirla a GitHub con git
+      # La MISMA base de datos y archivos que usa "python -m flask ... run" (carpeta instance/ del
+      # proyecto): lo que cambies con Docker o sin Docker es lo mismo. Se conserva al borrar el contenedor.
+      - ./instance:/app/instance
+      # Carpeta datos/ del proyecto: el guardado automático la actualiza en tu computador y luego la
+      # subes a GitHub con git
       - ./datos:/app/datos
     restart: unless-stopped
-
-volumes:
-  apuntesu_instance:

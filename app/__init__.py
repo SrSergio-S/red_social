@@ -76,15 +76,13 @@ def create_app(config_class=Config):
     with app.app_context():
         db.create_all()
         _actualizar_bd_existente(app)
-        if app.config["AUTO_SEED"] and not models.Usuario.query.first():
-            from .datos import cargar_datos, hay_datos_guardados
-            if hay_datos_guardados():
-                cargar_datos()
-                app.logger.warning("Base de datos vacía: se cargaron los datos guardados en la carpeta datos/.")
-            else:
-                from .seed import poblar_datos_demo
-                poblar_datos_demo()
-                app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
+        from .datos import activar_guardado_automatico, sincronizar_al_iniciar
+        base_vacia = not models.Usuario.query.first()
+        if not sincronizar_al_iniciar(app, base_vacia) and base_vacia and app.config["AUTO_SEED"]:
+            from .seed import poblar_datos_demo
+            poblar_datos_demo()
+            app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
+        activar_guardado_automatico(app)
 
     return app
 
