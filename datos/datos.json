@@ -78,7 +78,7 @@
   "materias": [
    {
     "id": 1,
-    "codigo": "CAL01",
+    "codigo": "CAL010",
     "nombre": "Cálculo Diferencial",
     "descripcion": "Límites, derivadas y aplicaciones.",
     "carrera": "Ciencias Básicas",
