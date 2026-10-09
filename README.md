@@ -106,8 +106,9 @@ Para traer la última versión a un Codespace que ya tenías: detén la app con 
 ## Con Docker
 
 El proyecto incluye un `Dockerfile` y un `docker-compose.yml`. Dentro del contenedor la app corre con
-**Gunicorn** (servidor de producción), como un usuario sin privilegios, y guarda la base de datos y los
-archivos subidos en un **volumen** para que no se pierdan al borrar o actualizar el contenedor.
+**Gunicorn** (servidor de producción), como un usuario sin privilegios. Con `docker compose` usa **la misma
+base de datos que la app sin Docker** (la carpeta `instance/` del proyecto), así que lo que cambies con o sin
+Docker es lo mismo, y se conserva aunque borres o actualices el contenedor.
 
 ### Opción 1: construirla tú (necesitas el código)
 
@@ -119,7 +120,8 @@ docker compose up --build -d     # construye la imagen y arranca el contenedor e
 ```
 
 Abre **http://localhost:5000** (en Codespaces, la dirección del puerto 5000 en la pestaña **Ports**).
-La primera vez se cargan los datos de la carpeta `datos/`.
+La primera vez se cargan los datos de la carpeta `datos/`, y cada cambio que hagas se guarda solo en
+`datos/` (ver [Llevar tus datos a otro computador](#llevar-tus-datos-a-otro-computador)).
 
 | Comando | Qué hace |
 |---|---|
@@ -127,10 +129,8 @@ La primera vez se cargan los datos de la carpeta `datos/`.
 | `docker compose logs -f` | Ver los registros de la app (`Ctrl + C` para salir) |
 | `docker compose stop` / `docker compose start` | Detener / volver a arrancar |
 | `docker compose up --build -d` | Aplicar cambios del código (reconstruye la imagen; los datos se conservan) |
-| `docker compose exec web python -m flask --app run guardar-datos` | Guardar los datos en la carpeta `datos/` de tu computador (luego súbelos con `git add datos`, `git commit` y `git push`) |
 | `docker compose exec web python -m flask --app run hacer-admin CORREO` | Dar acceso a `/admin` |
-| `docker compose down` | Borrar el contenedor (los datos se conservan en el volumen) |
-| `docker compose down -v` | Borrar el contenedor **y todos los datos** del volumen |
+| `docker compose down` | Borrar el contenedor (los datos se conservan en `instance/` y `datos/`) |
 
 Antes de usarla de verdad, cambia la clave secreta: crea un archivo `.env` junto a
 `docker-compose.yml` con una línea `SECRET_KEY=una-frase-larga-y-secreta` (este archivo no se sube a
@@ -233,25 +233,53 @@ python -m flask --app run hacer-admin correo@ejemplo.com
 
 ## Llevar tus datos a otro computador
 
-La base de datos (`instance/`) no se sube a GitHub, pero puedes guardar sus datos dentro del proyecto.
-Puedes hacerlo con la app funcionando, desde una **segunda terminal**:
+La base de datos (`instance/`) no se sube a GitHub; lo que viaja con el proyecto es la carpeta **`datos/`**
+(todas las tablas en `datos/datos.json` y los archivos de los apuntes en `datos/archivos/`). La app la
+mantiene sincronizada **sola**:
+
+| Cuándo | Qué hace la app automáticamente |
+|---|---|
+| Haces un cambio (en la app, en `/admin`, con o sin Docker) | Unos **5 segundos** después actualiza `datos/` |
+| Arranca en un computador recién clonado | Carga los datos de `datos/` |
+| Arranca y `datos/` cambió desde la última vez (por ejemplo, después de un `git pull`) | Carga los datos nuevos de `datos/` |
+| Con `AUTO_SUBIR=1`: pasa 1 minuto sin cambios nuevos | Hace *commit* y *push* **solo** de `datos/` a GitHub |
+
+### Subir los datos a GitHub
+
+Después de usar la app, en **Control de código fuente** (`Ctrl + Shift + G`) verás `datos/datos.json`
+modificado: haz *commit* y *Sync Changes*. O en la terminal:
 
 ```bash
-python -m flask --app run guardar-datos --subir
+python -m flask --app run guardar-datos --subir      # commit y push solo de datos/
 ```
 
-Esto exporta todas las tablas a `datos/datos.json`, copia los archivos de los apuntes a
-`datos/archivos/` y hace *commit* y *push* a GitHub. Sin `--subir` solo guarda la carpeta y tú haces el
-commit.
+Para que también se suba **solo**, inicia la app con `AUTO_SUBIR=1` (funciona sin Docker, donde están
+`git` y tus credenciales de GitHub, por ejemplo en Codespaces):
 
-- **Computador nuevo** (recién clonado): al iniciar la app se cargan solos los datos de `datos/`.
-- **Computador donde ya usabas la app:** después de `git pull`, detén la app y ejecuta
-  `python -m flask --app run cargar-datos` para reemplazar su base de datos por la de `datos/`.
+```bash
+AUTO_SUBIR=1 python -m flask --app run run --debug                 # Codespaces, macOS, Linux
+$env:AUTO_SUBIR=1; python -m flask --app run run --debug          # Windows (PowerShell)
+```
 
-> Los datos se sincronizan cuando tú lo pides, no en tiempo real. Guarda desde un solo lugar a la vez:
-> si cambias datos en dos computadores, el último que ejecute `guardar-datos` reemplaza los del otro.
-> Si el repositorio es público, cualquiera puede ver `datos/` (nombres, correos y comentarios; las
-> contraseñas van cifradas).
+Solo se sube la carpeta `datos/`: tus cambios de código nunca se incluyen en esos commits. Si el push
+falla porque hay cambios nuevos en GitHub, la app lo indica en la terminal; ejecuta `git pull` y se
+volverá a intentar en el siguiente cambio.
+
+### Traer los datos en otro computador
+
+```bash
+git pull                                   # trae datos/ actualizada
+python -m flask --app run run --debug      # al arrancar carga los datos nuevos solo
+```
+
+Con Docker es igual: `git pull` y luego `docker compose restart`.
+
+> - Trabaja desde **un solo lugar a la vez**. Si cambias datos en dos computadores sin hacer `git pull`
+>   entre medio, Git marcará un conflicto en `datos/datos.json`.
+> - Si el repositorio es público, cualquiera puede ver `datos/` (nombres, correos y comentarios; las
+>   contraseñas van cifradas).
+> - Para desactivar la sincronización automática: `AUTO_GUARDAR=0`. Para cargar o guardar a mano siguen
+>   existiendo `cargar-datos` y `guardar-datos`.
 
 ## Trabajar en el código
 
@@ -260,8 +288,8 @@ commit.
 - Los cambios en estilos (`.css`) se ven al recargar con `Ctrl + F5`.
 - Editar en el Codespace no actualiza GitHub. Sube tus cambios desde **Control de código fuente**
   (`Ctrl + Shift + G`) o con `git add -A`, `git commit -m "mensaje"` y `git push`.
-- El código y los datos se suben por separado: `git push` sube el código y `guardar-datos --subir` los
-  datos.
+- El código y los datos se suben por separado: `git push` sube el código, y los datos se guardan solos en
+  `datos/` (súbelos con *commit*/*push*, `guardar-datos --subir` o `AUTO_SUBIR=1`).
 
 ### Dónde cambiar el diseño
 
@@ -282,11 +310,11 @@ Si el comando `flask` no se reconoce, escribe `python -m flask` en su lugar (as�
 |---|---|
 | `python -m flask --app run run --debug` | Inicia la app con recarga automática al editar el código |
 | `python -m flask --app run guardar-datos [--subir]` | Guarda los datos actuales en `datos/` (y los sube a GitHub) |
-| `python -m flask --app run cargar-datos` | Reemplaza la base de datos por la guardada en `datos/` |
+| `python -m flask --app run cargar-datos` | Reemplaza la base de datos por la guardada en `datos/` (normalmente no hace falta: es automático) |
 | `python -m flask --app run seed` | Borra la base de datos y la llena con los datos de ejemplo |
 | `python -m flask --app run reset-db` | Borra todos los datos (al volver a arrancar se cargan `datos/` o los de ejemplo, salvo con `AUTO_SEED=0`) |
 | `python -m flask --app run hacer-admin CORREO` | Da acceso al panel `/admin` a ese usuario |
-| `pytest` | Ejecuta las pruebas automáticas (15 pruebas) |
+| `pytest` | Ejecuta las pruebas automáticas (18 pruebas) |
 
 ## Base de datos
 
@@ -332,7 +360,7 @@ red_social/
 │   ├── main.py              # Materias, apuntes, calificaciones, likes, foros, perfiles y ranking
 │   ├── tutorias.py          # Solicitudes de tutoría y sus estados
 │   ├── admin.py             # Panel de administración (/admin)
-│   ├── datos.py             # Comandos guardar-datos y cargar-datos
+│   ├── datos.py             # Sincronización con datos/ (automática y comandos guardar/cargar-datos)
 │   ├── seed.py              # Comandos seed, reset-db, hacer-admin y datos de ejemplo
 │   ├── templates/           # Páginas HTML (Jinja2 + Bootstrap 5)
 │   │   └── admin/           # Diseño propio del panel de administración
@@ -340,7 +368,8 @@ red_social/
 │       ├── css/style.css    # Estilos de la app
 │       ├── css/admin.css    # Estilos del panel de administración
 │       └── vendor/          # Bootstrap e iconos incluidos (no editar)
-├── datos/                   # Datos guardados con guardar-datos (datos.json + archivos/)
+├── datos/                   # Datos sincronizados (datos.json + archivos/) que viajan con GitHub
+├── instance/                # Base de datos local y archivos subidos (no se sube a GitHub)
 ├── tests/test_app.py        # Pruebas automáticas
 └── docs/                    # Modelo de datos y capturas de pantalla
 ```
@@ -362,7 +391,8 @@ Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir 
 | `No module named flask` (u otra librería) | Ejecuta `pip install -r requirements.txt`. |
 | "Correo o contraseña incorrectos" con `ana@uni.edu` | Esa cuenta es de los datos de ejemplo: ejecuta `python -m flask --app run seed`, o entra con una cuenta de los datos del proyecto. |
 | No veo los cambios después de `git pull` | Reinicia la app (`Ctrl + C` y vuelve a iniciarla) y recarga con `Ctrl + F5`. |
-| No veo los datos que guardó otra persona | Después de `git pull`, detén la app y ejecuta `python -m flask --app run cargar-datos`. |
+| No veo los datos que guardó otra persona | Haz `git pull` y reinicia la app (o `docker compose restart`): carga sola los datos nuevos. Si aun así no aparecen, ejecuta `python -m flask --app run cargar-datos`. |
+| Conflicto de Git en `datos/datos.json` | Se cambiaron datos en dos lugares a la vez. Quédate con una versión (`git checkout --theirs datos` para la de GitHub o `--ours` para la tuya), haz commit y reinicia la app. |
 | Entro a `/admin` y dice "No tienes permiso" | Tu usuario no es administrador: `python -m flask --app run hacer-admin TU_CORREO`. |
 | `docker: command not found` o "Cannot connect to the Docker daemon" | Instala y abre Docker Desktop (en Windows/Mac debe estar abierto mientras lo usas). |
 | El puerto 5000 ya está en uso al levantar Docker | Detén la app que corre con `flask` (`Ctrl + C`) o cambia `"5000:5000"` por `"5001:5000"` en `docker-compose.yml` y abre el puerto 5001. |
