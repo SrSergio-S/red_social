@@ -78,7 +78,7 @@
   "materias": [
    {
     "id": 1,
-    "codigo": "MAT101",
+    "codigo": "CAL01",
     "nombre": "Cálculo Diferencial",
     "descripcion": "Límites, derivadas y aplicaciones.",
     "carrera": "Ciencias Básicas",
@@ -86,7 +86,7 @@
    },
    {
     "id": 2,
-    "codigo": "MAT201",
+    "codigo": "ALG02",
     "nombre": "Álgebra Lineal",
     "descripcion": "Matrices, espacios vectoriales y transformaciones.",
     "carrera": "Ciencias Básicas",
@@ -94,7 +94,7 @@
    },
    {
     "id": 3,
-    "codigo": "SIS210",
+    "codigo": "PPY02",
     "nombre": "Programación en Python",
     "descripcion": "Fundamentos de programación con Python.",
     "carrera": "Ingeniería de Sistemas",
@@ -102,7 +102,7 @@
    },
    {
     "id": 4,
-    "codigo": "SIS305",
+    "codigo": "BD04",
     "nombre": "Bases de Datos",
     "descripcion": "Modelo relacional, SQL y normalización.",
     "carrera": "Ingeniería de Sistemas",
@@ -110,7 +110,7 @@
    },
    {
     "id": 5,
-    "codigo": "EST220",
+    "codigo": "EST03",
     "nombre": "Estadística y Probabilidad",
     "descripcion": "Distribuciones, inferencia y regresión.",
     "carrera": "Ciencias Básicas",
@@ -118,7 +118,7 @@
    },
    {
     "id": 6,
-    "codigo": "IND330",
+    "codigo": "IND05",
     "nombre": "Investigación de Operaciones",
     "descripcion": "Programación lineal y modelos de optimización.",
     "carrera": "Ingeniería Industrial",
