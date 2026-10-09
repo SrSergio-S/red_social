@@ -1,0 +1,14 @@
+# Lo que NO se copia dentro de la imagen
+.git
+.github
+.venv
+venv
+env
+__pycache__
+*.pyc
+.pytest_cache
+instance
+*.db
+.env
+.DS_Store
+docs/capturas
