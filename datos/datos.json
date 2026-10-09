@@ -1182,6 +1182,21 @@
     "respuesta_tutor": "Listo, quedó resuelto.",
     "fecha_creacion": "2026-10-07T19:00:28.729587",
     "fecha_actualizacion": "2026-10-07T19:00:28.729589"
+   },
+   {
+    "id": 4,
+    "solicitante_id": 6,
+    "tutor_id": 1,
+    "materia_id": 4,
+    "apunte_id": 9,
+    "tema": "Consultas SQL con JOIN",
+    "mensaje": "Ayudame con este tema por favor",
+    "modalidad": "virtual",
+    "fecha_propuesta": "2026-10-13T10:46:00",
+    "estado": "pendiente",
+    "respuesta_tutor": null,
+    "fecha_creacion": "2026-10-09T15:46:54.944920",
+    "fecha_actualizacion": "2026-10-09T15:46:54.944925"
    }
   ]
  }
