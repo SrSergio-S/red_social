@@ -324,3 +324,11 @@ def test_guardar_y_cargar_datos_en_otro_computador(tmp_path):
         # se puede seguir usando con normalidad (los ids nuevos no chocan)
         assert b"publicado" in subir(cliente, apunte.materia_id, titulo="Otro", nombre="otro.txt").data
         db.session.remove()
+
+
+def test_mis_tutorias_indica_si_no_es_tutor(client):
+    registrar(client)
+    assert "Eres tutor".encode() in client.get("/tutorias/").data
+    client.post("/perfil/editar", data={"nombre": "Ana"})  # sin marcar "ofrece tutorías"
+    pagina = client.get("/tutorias/").data
+    assert "No eres tutor".encode() in pagina and "Quiero ofrecer tutorías".encode() in pagina
