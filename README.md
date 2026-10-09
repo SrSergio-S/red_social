@@ -172,20 +172,35 @@ Después cualquiera puede ejecutarla con `docker run -p 5000:5000 -v apuntesu_da
 
 El proyecto puede arrancar con dos conjuntos de datos:
 
-- **Los datos del proyecto (carpeta `datos/`).** Es lo que carga un computador recién clonado. Entra con
-  las cuentas que fueron registradas en la app; la cuenta administradora de esos datos puede ver todos
-  los usuarios en `/admin` y cambiar cualquier contraseña.
-- **Los datos de ejemplo.** Se cargan con `python -m flask --app run seed` (borra lo que haya en la base
-  de datos de ese computador). Todas las cuentas usan la contraseña `demo123`:
+### Datos del proyecto (carpeta `datos/`)
 
-  | Correo | Perfil |
-  |---|---|
-  | sergio@sanmateo.edu | **Administradora** (enlace *Admin* en el menú) · tiene una tutoría pendiente |
-  | luis@sanmateo.edu | Ing. de Sistemas |
-  | maria@sanmateo.edu | Ing. Industrial |
-  | carlos@sanmateo.edu | Ing. de Sistemas |
-  | sofia@sanmateo.edu | Matemáticas |
-  | karen@sanmateo.edu | Ing. de Sistemas |
+Es lo que carga un computador recién clonado (y el contenedor Docker la primera vez). Cada cuenta entra
+con la contraseña que se registró en la app:
+
+| Correo | Perfil |
+|---|---|
+| sergio@sanmateo.edu | **Administrador** (acceso a `/admin`) · Ing. de Sistemas · ofrece tutorías · tiene una tutoría pendiente |
+| luis@sanmateo.edu | Ing. de Sistemas · ofrece tutorías |
+| maria@sanmateo.edu | Ing. Industrial · ofrece tutorías |
+| carlos@sanmateo.edu | Ing. de Sistemas |
+| sofia@sanmateo.edu | Matemáticas |
+| karen@sanmateo.edu | Ing. de Sistemas |
+
+Si alguien olvida su contraseña, el administrador puede cambiarla en `/admin` → **Usuarios** → editar →
+*Nueva contraseña*.
+
+### Datos de ejemplo
+
+Se cargan con `python -m flask --app run seed` (borra lo que haya en la base de datos de ese computador).
+Todas las cuentas usan la contraseña `demo123`:
+
+| Correo | Perfil |
+|---|---|
+| ana@uni.edu | **Administradora** (acceso a `/admin`) · tiene una tutoría pendiente |
+| luis@uni.edu | Ing. de Sistemas |
+| maria@uni.edu | Ing. Industrial |
+| carlos@uni.edu | Ing. de Sistemas |
+| sofia@uni.edu | Matemáticas |
 
 Para volver a los datos del proyecto después de usar los de ejemplo: `python -m flask --app run cargar-datos`.
 
