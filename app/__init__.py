@@ -28,23 +28,9 @@ def _activar_claves_foraneas_sqlite(dbapi_connection, connection_record):
         cursor.close()
 
 
-MENSAJE_SOLO_DOCKER = """
-  ApuntesU se ejecuta solo con Docker.
-
-  Para iniciar la app:      docker compose up --build -d
-  Luego abre:               http://localhost:5000  (en Codespaces: puerto 5000 en la pestaña Ports)
-  Comandos de la app:       docker compose exec web python -m flask --app run <comando>
-"""
-
-
 def create_app(config_class=Config):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config_class)
-
-    # La app solo corre dentro del contenedor (el Dockerfile define APUNTESU_EN_DOCKER=1).
-    # Las pruebas automáticas (TESTING) sí pueden ejecutarse fuera.
-    if not app.config.get("TESTING") and os.environ.get("APUNTESU_EN_DOCKER") != "1":
-        raise SystemExit(MENSAJE_SOLO_DOCKER)
 
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
@@ -90,13 +76,15 @@ def create_app(config_class=Config):
     with app.app_context():
         db.create_all()
         _actualizar_bd_existente(app)
-        from .datos import activar_guardado_automatico, sincronizar_al_iniciar
-        base_vacia = not models.Usuario.query.first()
-        if not sincronizar_al_iniciar(app, base_vacia) and base_vacia and app.config["AUTO_SEED"]:
-            from .seed import poblar_datos_demo
-            poblar_datos_demo()
-            app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
-        activar_guardado_automatico(app)
+        if app.config["AUTO_SEED"] and not models.Usuario.query.first():
+            from .datos import cargar_datos, hay_datos_guardados
+            if hay_datos_guardados():
+                cargar_datos()
+                app.logger.warning("Base de datos vacía: se cargaron los datos guardados en la carpeta datos/.")
+            else:
+                from .seed import poblar_datos_demo
+                poblar_datos_demo()
+                app.logger.warning("Base de datos vacía: se cargaron los datos de ejemplo (ana@uni.edu / demo123).")
 
     return app
 

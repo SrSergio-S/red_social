@@ -4,8 +4,7 @@ __pycache__/
 venv/
 env/
 .pytest_cache/
-instance/*
-!instance/.gitkeep
+instance/
 *.db
 .env
 .DS_Store

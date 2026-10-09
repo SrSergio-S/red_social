@@ -10,17 +10,16 @@ desde el navegador.
 ## Contenido
 
 1. [Funcionalidades](#funcionalidades)
-2. [Cómo ejecutarla (con Docker)](#cómo-ejecutarla-con-docker)
-3. [Usar la imagen publicada](#usar-la-imagen-publicada)
-4. [Cuentas para entrar](#cuentas-para-entrar)
-5. [Panel de administración](#panel-de-administración)
-6. [Llevar tus datos a otro computador](#llevar-tus-datos-a-otro-computador)
-7. [Trabajar en el código](#trabajar-en-el-código)
-8. [Comandos útiles](#comandos-útiles)
-9. [Base de datos](#base-de-datos)
-10. [Estructura del proyecto](#estructura-del-proyecto)
-11. [Tecnologías](#tecnologías)
-12. [Solución de problemas](#solución-de-problemas)
+2. [Cómo ejecutarla](#cómo-ejecutarla)
+3. [Cuentas para entrar](#cuentas-para-entrar)
+4. [Panel de administración](#panel-de-administración)
+5. [Llevar tus datos a otro computador](#llevar-tus-datos-a-otro-computador)
+6. [Trabajar en el código](#trabajar-en-el-código)
+7. [Comandos útiles](#comandos-útiles)
+8. [Base de datos](#base-de-datos)
+9. [Estructura del proyecto](#estructura-del-proyecto)
+10. [Tecnologías](#tecnologías)
+11. [Solución de problemas](#solución-de-problemas)
 
 ## Funcionalidades
 
@@ -59,127 +58,70 @@ desde el navegador.
   actividad reciente, y gestión completa de todas las tablas. Detalles en
   [Panel de administración](#panel-de-administración).
 
-## Cómo ejecutarla (con Docker)
+## Cómo ejecutarla
 
-ApuntesU se ejecuta **solo con Docker**: no necesitas instalar Python ni ninguna librería. Si alguien
-intenta iniciarla sin Docker (por ejemplo con `python -m flask run`), la app se detiene y muestra cómo
-iniciarla correctamente.
+Requisitos: **Python 3.10 o superior** y **Git**.
 
-### En un computador (Windows, macOS o Linux)
-
-Requisitos:
-1. [**Docker Desktop**](https://www.docker.com/products/docker-desktop/) instalado y **abierto** (en Linux
-   también sirve Docker Engine).
-2. [**Git**](https://git-scm.com/downloads) para descargar el proyecto (o usa **Code → Download ZIP** en GitHub).
+### En tu computador
 
 ```bash
+# 1. Descargar el proyecto
 git clone https://github.com/SrSergio-S/red_social.git
 cd red_social
-docker compose up --build -d
+
+# 2. Crear y activar un entorno virtual
+python -m venv venv
+venv\Scripts\activate            # Windows
+source venv/bin/activate         # macOS / Linux
+
+# 3. Instalar las dependencias
+pip install -r requirements.txt
+
+# 4. Iniciar la aplicación
+python -m flask --app run run --debug
 ```
 
-Abre **http://localhost:5000**. La primera vez tarda 1 o 2 minutos mientras construye la imagen; las
-siguientes es casi inmediato. La base de datos se crea sola y se llena con los datos de la carpeta
-`datos/`.
+Abre **http://127.0.0.1:5000** en el navegador.
+
+No hace falta crear la base de datos a mano: la primera vez que arranca, la app la crea y la llena con
+los datos guardados en la carpeta `datos/` o, si esa carpeta no existe, con los datos de ejemplo.
+
+> Si no tienes Git, en GitHub usa **Code → Download ZIP**, descomprime el archivo y sigue desde el paso 2.
 
 ### En GitHub Codespaces
 
-Docker ya viene instalado. En el repositorio: **Code → Codespaces → Create codespace on main** y en la
-terminal:
+1. En el repositorio: **Code → Codespaces → Create codespace on main**.
+2. En la terminal del Codespace:
+   ```bash
+   pip install -r requirements.txt
+   python -m flask --app run run --debug
+   ```
+3. Cuando aparezca el aviso del puerto 5000, pulsa **Open in Browser** (o abre la pestaña **Ports** y
+   entra a la dirección del puerto 5000).
 
-```bash
-docker compose up --build -d
-```
-
-Luego abre la pestaña **Ports** y entra a la dirección del puerto **5000**.
-
-### Usar la app día a día
-
-| Comando | Qué hace |
-|---|---|
-| `docker compose up --build -d` | Iniciar la app (y aplicar los cambios de código) |
-| `docker compose up --build -d --force-recreate` | Reiniciar desde cero; úsalo después de un `git pull` para cargar código y datos nuevos |
-| `docker compose ps` | Ver si está corriendo (debe decir `healthy`) |
-| `docker compose logs -f` | Ver los registros de la app (`Ctrl + C` para salir; la app sigue corriendo) |
-| `docker compose stop` / `docker compose start` | Apagar / volver a encender |
-| `docker compose restart` | Reiniciar (por ejemplo, para cargar datos nuevos tras un `git pull`) |
-| `docker compose down` | Apagar y borrar el contenedor (los datos se conservan en `instance/` y `datos/`) |
-
-Dentro del contenedor la app corre con **Gunicorn** (servidor de producción) y con un usuario sin
-privilegios. La base de datos y los archivos subidos viven en la carpeta `instance/` del proyecto, así que
-se conservan aunque borres o reconstruyas el contenedor.
-
-Antes de usarla de verdad, cambia la clave secreta: crea un archivo `.env` junto a
-`docker-compose.yml` con una línea `SECRET_KEY=una-frase-larga-y-secreta` (este archivo no se sube a
-GitHub).
-
-## Usar la imagen publicada
-
-Cada vez que hay cambios en `main`, **GitHub Actions** ejecuta las pruebas, construye la imagen y la
-publica en GitHub Container Registry (archivo `.github/workflows/docker.yml`). Desde cualquier computador
-con Docker:
-
-```bash
-docker run -d --name apuntesu -p 5000:5000 \
-  -e SECRET_KEY=una-frase-larga-y-secreta \
-  -v apuntesu_datos:/app/instance \
-  ghcr.io/srsergio-s/red_social:latest
-```
-
-Para actualizarla: `docker pull ghcr.io/srsergio-s/red_social:latest`, luego `docker rm -f apuntesu` y el
-mismo `docker run` (los datos siguen en el volumen `apuntesu_datos`).
-
-> La primera vez que se publica, GitHub crea el paquete como **privado**. Para que cualquiera pueda
-> descargarlo: en GitHub entra a tu perfil → **Packages** → `red_social` → **Package settings** →
-> **Change visibility** → **Public**. El progreso de cada publicación se ve en la pestaña **Actions**.
-
-### Publicarla en Docker Hub
-
-Si prefieres [Docker Hub](https://hub.docker.com/) (necesitas una cuenta gratuita):
-
-```bash
-docker login                                       # tu usuario y contraseña de Docker Hub
-docker build -t TU_USUARIO/apuntesu:latest .
-docker push TU_USUARIO/apuntesu:latest
-```
-
-Después cualquiera puede ejecutarla con `docker run -p 5000:5000 -v apuntesu_datos:/app/instance TU_USUARIO/apuntesu`.
+Para traer la última versión a un Codespace que ya tenías: detén la app con `Ctrl + C` y ejecuta
+`git pull` y `pip install -r requirements.txt` antes de volver a iniciarla.
 
 ## Cuentas para entrar
 
 El proyecto puede arrancar con dos conjuntos de datos:
 
-### Datos del proyecto (carpeta `datos/`)
+- **Los datos del proyecto (carpeta `datos/`).** Es lo que carga un computador recién clonado. Entra con
+  las cuentas que fueron registradas en la app; la cuenta administradora de esos datos puede ver todos
+  los usuarios en `/admin` y cambiar cualquier contraseña.
+- **Los datos de ejemplo.** Se cargan con `python -m flask --app run seed` (borra lo que haya en la base
+  de datos de ese computador). Todas las cuentas usan la contraseña `demo123`:
 
-Es lo que carga un computador recién clonado (y el contenedor Docker la primera vez). Cada cuenta entra
-con la contraseña que se registró en la app:
+  | Correo | Perfil |
+  |---|---|
+  | sergio@sanmateo.edu | **Administradora** (enlace *Admin* en el menú) · tiene una tutoría pendiente |
+  | luis@sanmateo.edu | Ing. de Sistemas |
+  | maria@sanmateo.edu | Ing. Industrial |
+  | carlos@sanmateo.edu | Ing. de Sistemas |
+  | sofia@sanmateo.edu | Matemáticas |
+  | karen@sanmateo.edu | Ing. de Sistemas |
 
-| Correo | Perfil |
-|---|---|
-| sergio@sanmateo.edu | **Administrador** (acceso a `/admin`) · Ing. de Sistemas · ofrece tutorías · tiene una tutoría pendiente |
-| luis@sanmateo.edu | Ing. de Sistemas · ofrece tutorías |
-| maria@sanmateo.edu | Ing. Industrial · ofrece tutorías |
-| carlos@sanmateo.edu | Ing. de Sistemas |
-| sofia@sanmateo.edu | Matemáticas |
-| karen@sanmateo.edu | Ing. de Sistemas |
-
-Si alguien olvida su contraseña, el administrador puede cambiarla en `/admin` → **Usuarios** → editar →
-*Nueva contraseña*.
-
-### Datos de ejemplo
-
-Se cargan con `docker compose exec web python -m flask --app run seed` (borra lo que haya en la base de datos de ese computador).
-Todas las cuentas usan la contraseña `demo123`:
-
-| Correo | Perfil |
-|---|---|
-| ana@uni.edu | **Administradora** (acceso a `/admin`) · tiene una tutoría pendiente |
-| luis@uni.edu | Ing. de Sistemas |
-| maria@uni.edu | Ing. Industrial |
-| carlos@uni.edu | Ing. de Sistemas |
-| sofia@uni.edu | Matemáticas |
-
-Para volver a los datos del proyecto después de usar los de ejemplo: `docker compose exec web python -m flask --app run cargar-datos`.
+Para volver a los datos del proyecto después de usar los de ejemplo: `python -m flask --app run cargar-datos`.
 
 ## Panel de administración
 
@@ -205,54 +147,40 @@ Solo entran los administradores; cualquier otro usuario recibe "No tienes permis
 otra persona, márcala como administradora en el panel o ejecuta:
 
 ```bash
-docker compose exec web python -m flask --app run hacer-admin correo@ejemplo.com
+python -m flask --app run hacer-admin correo@ejemplo.com
 ```
 
 ## Llevar tus datos a otro computador
 
-La base de datos (`instance/`) no se sube a GitHub; lo que viaja con el proyecto es la carpeta **`datos/`**
-(todas las tablas en `datos/datos.json` y los archivos de los apuntes en `datos/archivos/`). La app la
-mantiene sincronizada **sola**:
-
-| Cuándo | Qué hace la app automáticamente |
-|---|---|
-| Haces un cambio (en la app o en `/admin`) | Unos **5 segundos** después actualiza `datos/` |
-| Arranca en un computador recién clonado | Carga los datos de `datos/` |
-| Arranca y `datos/` cambió desde la última vez (por ejemplo, después de un `git pull`) | Carga los datos nuevos de `datos/` |
-
-### Subir los datos a GitHub
-
-Después de usar la app, en **Control de código fuente** (`Ctrl + Shift + G`) verás `datos/datos.json`
-modificado: haz *commit* y *Sync Changes*. O en la terminal:
+La base de datos (`instance/`) no se sube a GitHub, pero puedes guardar sus datos dentro del proyecto.
+Puedes hacerlo con la app funcionando, desde una **segunda terminal**:
 
 ```bash
-git add datos
-git commit -m "Actualiza datos"
-git push
+python -m flask --app run guardar-datos --subir
 ```
 
-### Traer los datos en otro computador
+Esto exporta todas las tablas a `datos/datos.json`, copia los archivos de los apuntes a
+`datos/archivos/` y hace *commit* y *push* a GitHub. Sin `--subir` solo guarda la carpeta y tú haces el
+commit.
 
-```bash
-git pull
-docker compose up --build -d --force-recreate     # reinicia la app: carga sola los datos nuevos
-```
+- **Computador nuevo** (recién clonado): al iniciar la app se cargan solos los datos de `datos/`.
+- **Computador donde ya usabas la app:** después de `git pull`, detén la app y ejecuta
+  `python -m flask --app run cargar-datos` para reemplazar su base de datos por la de `datos/`.
 
-> - Trabaja desde **un solo lugar a la vez**. Si cambias datos en dos computadores sin hacer `git pull`
->   entre medio, Git marcará un conflicto en `datos/datos.json`.
-> - Si el repositorio es público, cualquiera puede ver `datos/` (nombres, correos y comentarios; las
->   contraseñas van cifradas).
-> - Para cargar o guardar a mano siguen existiendo `docker compose exec web python -m flask --app run cargar-datos` y `... guardar-datos`.
+> Los datos se sincronizan cuando tú lo pides, no en tiempo real. Guarda desde un solo lugar a la vez:
+> si cambias datos en dos computadores, el último que ejecute `guardar-datos` reemplaza los del otro.
+> Si el repositorio es público, cualquiera puede ver `datos/` (nombres, correos y comentarios; las
+> contraseñas van cifradas).
 
 ## Trabajar en el código
 
-- Después de editar el código (Python, HTML o CSS), aplica los cambios con `docker compose up --build -d`.
-  Tarda pocos segundos porque Docker reutiliza las librerías ya instaladas. Luego recarga con `Ctrl + F5`.
-- Si algo falla, mira el error con `docker compose logs -f`.
-- Editar el código no actualiza GitHub. Sube tus cambios desde **Control de código fuente**
+- Inicia la app con `--debug`: al guardar un archivo `.py` se reinicia sola, y las plantillas HTML se
+  actualizan al recargar la página. Si algo falla, el navegador muestra en qué línea está el error.
+- Los cambios en estilos (`.css`) se ven al recargar con `Ctrl + F5`.
+- Editar en el Codespace no actualiza GitHub. Sube tus cambios desde **Control de código fuente**
   (`Ctrl + Shift + G`) o con `git add -A`, `git commit -m "mensaje"` y `git push`.
-- Las **pruebas automáticas** se ejecutan dentro del contenedor: `docker compose exec web python -m pytest -q`.
-  GitHub Actions también las ejecuta en cada cambio.
+- El código y los datos se suben por separado: `git push` sube el código y `guardar-datos --subir` los
+  datos.
 
 ### Dónde cambiar el diseño
 
@@ -267,18 +195,17 @@ docker compose up --build -d --force-recreate     # reinicia la app: carga sola 
 
 ## Comandos útiles
 
-Los comandos de la app se ejecutan **dentro del contenedor** (que debe estar encendido) anteponiendo
-`docker compose exec web`:
+Si el comando `flask` no se reconoce, escribe `python -m flask` en su lugar (así están escritos aquí).
 
 | Comando | Qué hace |
 |---|---|
-| `docker compose up --build -d` | Inicia la app (o aplica cambios de código) |
-| `docker compose exec web python -m flask --app run hacer-admin CORREO` | Da acceso al panel `/admin` a ese usuario |
-| `docker compose exec web python -m flask --app run guardar-datos` | Guarda a mano los datos en `datos/` (normalmente es automático) |
-| `docker compose exec web python -m flask --app run cargar-datos --si` | Reemplaza la base de datos por la de `datos/` (normalmente es automático) |
-| `docker compose exec web python -m flask --app run seed` | Borra la base de datos y la llena con los datos de ejemplo |
-| `docker compose exec web python -m flask --app run reset-db` | Borra todos los datos (al reiniciar se cargan `datos/` o los de ejemplo) |
-| `docker compose exec web python -m pytest -q` | Ejecuta las pruebas automáticas |
+| `python -m flask --app run run --debug` | Inicia la app con recarga automática al editar el código |
+| `python -m flask --app run guardar-datos [--subir]` | Guarda los datos actuales en `datos/` (y los sube a GitHub) |
+| `python -m flask --app run cargar-datos` | Reemplaza la base de datos por la guardada en `datos/` |
+| `python -m flask --app run seed` | Borra la base de datos y la llena con los datos de ejemplo |
+| `python -m flask --app run reset-db` | Borra todos los datos (al volver a arrancar se cargan `datos/` o los de ejemplo, salvo con `AUTO_SEED=0`) |
+| `python -m flask --app run hacer-admin CORREO` | Da acceso al panel `/admin` a ese usuario |
+| `pytest` | Ejecuta las pruebas automáticas (15 pruebas) |
 
 ## Base de datos
 
@@ -287,8 +214,8 @@ Los comandos de la app se ejecutan **dentro del contenedor** (que debe estar enc
 - Los cambios hechos en la app o en el panel se guardan **al instante** en la base de datos.
 - Las bases de datos creadas con versiones anteriores se actualizan solas al arrancar (por ejemplo, se
   agrega la columna de administrador sin perder datos).
-- Para ver las tablas fuera de la app: la extensión **SQLite3 Editor** en VS Code/Codespaces o
-  [DB Browser for SQLite](https://sqlitebrowser.org/), abriendo `instance/red_social.db`.
+- Para ver las tablas fuera de la app: el panel `/admin`, la extensión **SQLite3 Editor** en
+  VS Code/Codespaces, [DB Browser for SQLite](https://sqlitebrowser.org/) o `sqlite3 instance/red_social.db`.
 - El modelo completo (diagrama entidad-relación, relaciones muchos a muchos, restricciones, estados de
   una tutoría y consultas SQL de ejemplo) está en **[docs/modelo_datos.md](docs/modelo_datos.md)**.
 
@@ -309,12 +236,8 @@ Relaciones principales:
 
 ```
 red_social/
-├── run.py                   # Punto de entrada (lo usa Gunicorn dentro del contenedor)
-├── requirements.txt         # Dependencias (se instalan dentro de la imagen Docker)
-├── Dockerfile               # Imagen Docker de la app (Gunicorn)
-├── docker-compose.yml       # Levantar la app con "docker compose up"
-├── .dockerignore            # Archivos que no entran a la imagen
-├── .github/workflows/       # GitHub Actions: pruebas y publicación de la imagen
+├── run.py                   # Punto de entrada
+├── requirements.txt         # Dependencias
 ├── pytest.ini               # Configuración de las pruebas
 ├── app/
 │   ├── __init__.py          # Crea la app, la base de datos, el login y actualiza BD antiguas
@@ -324,7 +247,7 @@ red_social/
 │   ├── main.py              # Materias, apuntes, calificaciones, likes, foros, perfiles y ranking
 │   ├── tutorias.py          # Solicitudes de tutoría y sus estados
 │   ├── admin.py             # Panel de administración (/admin)
-│   ├── datos.py             # Sincronización con datos/ (automática y comandos guardar/cargar-datos)
+│   ├── datos.py             # Comandos guardar-datos y cargar-datos
 │   ├── seed.py              # Comandos seed, reset-db, hacer-admin y datos de ejemplo
 │   ├── templates/           # Páginas HTML (Jinja2 + Bootstrap 5)
 │   │   └── admin/           # Diseño propio del panel de administración
@@ -332,8 +255,7 @@ red_social/
 │       ├── css/style.css    # Estilos de la app
 │       ├── css/admin.css    # Estilos del panel de administración
 │       └── vendor/          # Bootstrap e iconos incluidos (no editar)
-├── datos/                   # Datos sincronizados (datos.json + archivos/) que viajan con GitHub
-├── instance/                # Base de datos local y archivos subidos (no se sube a GitHub)
+├── datos/                   # Datos guardados con guardar-datos (datos.json + archivos/)
 ├── tests/test_app.py        # Pruebas automáticas
 └── docs/                    # Modelo de datos y capturas de pantalla
 ```
@@ -342,7 +264,7 @@ red_social/
 
 Flask 3 · Flask-SQLAlchemy (ORM) · Flask-Login (sesiones) · Flask-WTF (protección CSRF) ·
 Flask-Admin + Flask-Babel (panel de administración en español) · SQLite · Bootstrap 5 + Bootstrap Icons ·
-pytest · Docker + Gunicorn · GitHub Actions.
+pytest.
 
 Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir la variable de entorno
 `DATABASE_URL` e instalar su driver; el código no cambia.
@@ -351,13 +273,9 @@ Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir 
 
 | Problema | Solución |
 |---|---|
-| Al ejecutar `python -m flask ...` aparece "ApuntesU se ejecuta solo con Docker" | Es intencional: inicia la app con `docker compose up --build -d`. |
-| `docker: command not found` o "Cannot connect to the Docker daemon" | Instala Docker Desktop y ábrelo (en Windows/Mac debe estar abierto mientras usas la app). |
-| La página no carga | Revisa `docker compose ps` (debe decir `healthy`) y los errores con `docker compose logs -f`. |
-| El puerto 5000 ya está en uso | Otra app usa ese puerto: ciérrala, o cambia `"5000:5000"` por `"5001:5000"` en `docker-compose.yml` y abre el puerto 5001. |
-| `service "web" is not running` al usar `docker compose exec` | La app está apagada: enciéndela con `docker compose up -d`. |
-| "Correo o contraseña incorrectos" con `ana@uni.edu` | Esa cuenta es de los datos de ejemplo: `docker compose exec web python -m flask --app run seed`, o entra con una cuenta de los datos del proyecto. |
-| No veo los cambios de código o de `git pull` | Ejecuta `docker compose up --build -d --force-recreate` y recarga con `Ctrl + F5`. |
-| No veo los datos que guardó otra persona | Haz `git pull` y `docker compose restart`: carga sola los datos nuevos. Si aun así no aparecen: `docker compose exec web python -m flask --app run cargar-datos --si`. |
-| Conflicto de Git en `datos/datos.json` | Se cambiaron datos en dos lugares a la vez. Quédate con una versión (`git checkout --theirs datos` para la de GitHub o `--ours` para la tuya), haz commit y reinicia la app. |
-| Entro a `/admin` y dice "No tienes permiso" | Tu usuario no es administrador: `docker compose exec web python -m flask --app run hacer-admin TU_CORREO`. |
+| `flask: command not found` | Usa `python -m flask ...` o activa el entorno virtual (`source venv/bin/activate`). |
+| `No module named flask` (u otra librería) | Ejecuta `pip install -r requirements.txt`. |
+| "Correo o contraseña incorrectos" con `ana@uni.edu` | Esa cuenta es de los datos de ejemplo: ejecuta `python -m flask --app run seed`, o entra con una cuenta de los datos del proyecto. |
+| No veo los cambios después de `git pull` | Reinicia la app (`Ctrl + C` y vuelve a iniciarla) y recarga con `Ctrl + F5`. |
+| No veo los datos que guardó otra persona | Después de `git pull`, detén la app y ejecuta `python -m flask --app run cargar-datos`. |
+| Entro a `/admin` y dice "No tienes permiso" | Tu usuario no es administrador: `python -m flask --app run hacer-admin TU_CORREO`. |
