@@ -114,11 +114,12 @@ El proyecto puede arrancar con dos conjuntos de datos:
 
   | Correo | Perfil |
   |---|---|
-  | ana@uni.edu | **Administradora** (enlace *Admin* en el menú) · tiene una tutoría pendiente |
-  | luis@uni.edu | Ing. de Sistemas |
-  | maria@uni.edu | Ing. Industrial |
-  | carlos@uni.edu | Ing. de Sistemas |
-  | sofia@uni.edu | Matemáticas |
+  | sergio@sanmateo.edu | **Administradora** (enlace *Admin* en el menú) · tiene una tutoría pendiente |
+  | luis@sanmateo.edu | Ing. de Sistemas |
+  | maria@sanmateo.edu | Ing. Industrial |
+  | carlos@sanmateo.edu | Ing. de Sistemas |
+  | sofia@sanmateo.edu | Matemáticas |
+  | karen@sanmateo.edu | Ing. de Sistemas |
 
 Para volver a los datos del proyecto después de usar los de ejemplo: `python -m flask --app run cargar-datos`.
 
