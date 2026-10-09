@@ -439,4 +439,11 @@ def ranking():
         .limit(20)
         .all()
     )
-    return render_template("usuarios/ranking.html", top=top)
+    descargas = dict(
+        db.session.query(Apunte.autor_id, func.count(Descarga.id)).join(Descarga).group_by(Apunte.autor_id).all()
+    )
+    total_likes = dict(
+        db.session.query(Apunte.autor_id, func.count()).select_from(likes)
+        .join(Apunte, Apunte.id == likes.c.apunte_id).group_by(Apunte.autor_id).all()
+    )
+    return render_template("usuarios/ranking.html", top=top, descargas=descargas, likes=total_likes)
