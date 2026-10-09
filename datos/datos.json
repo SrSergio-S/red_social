@@ -141,8 +141,8 @@
    {
     "id": 2,
     "nombre": "Luis Pérez",
-    "email": "luis@uni.edu",
-    "password_hash": "scrypt:32768:8:1$hpDoIOl8GD4E7qH0$e1acaee00f63e8399fd3a1965397bf7292b889d1fa817ca4912959d19d91986922c22acf35c54358950f596c80e46aaec68ab34d650ac34f7907642c6f7dd340",
+    "email": "luis@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$J0fYwHuCl3BOgmlv$3824630f47cde6ae25fe0c6368e566007463296da2663be080041283aada3d98ee0dee28eaa2861490319c9b6d9df347954e4c2166533c291b9cd18e0436915a",
     "carrera": "Ingeniería de Sistemas",
     "semestre": 4,
     "bio": "Monitor de Cálculo. Pregunta sin miedo.",
@@ -153,8 +153,8 @@
    {
     "id": 3,
     "nombre": "María Gómez",
-    "email": "maria@uni.edu",
-    "password_hash": "scrypt:32768:8:1$AcPtnyxRifLrGuBG$fb36dc6696b8c497f309263c91727829392f724b7117d552c7dbea636dbded964da9871b2765b249def5e0e1f0f632297418b4cb58f257618e987b96dce2b22b",
+    "email": "maria@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$qEzzcbKdzR5zcnyz$62daa380d57f0406914f9c1a98501c9d47b0aae7a7177f1e9e51313b34b80b97ccf476221affd1be3a1417bbc5b133ff056df4bbc58eb1e5ea869b96a17867c9",
     "carrera": "Ingeniería Industrial",
     "semestre": 5,
     "bio": "Resúmenes con mapas mentales.",
@@ -165,26 +165,38 @@
    {
     "id": 4,
     "nombre": "Carlos Ruiz",
-    "email": "carlos@uni.edu",
-    "password_hash": "scrypt:32768:8:1$hoOAMlnHDwfRTxPC$19c6466784da568ab630a5d250c9e6d3078e9c6f38649aabee41fe70c547ccf0bf01f76471bb0a6f2c37eba1b4be8773777ef7ee02246c65b3984c8c2635dadd",
+    "email": "carlos@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$lFXSBcsaQ31UeTuX$b1d94d1387d0d2295fc0e4061636c53142db7800f8414df5dfaef4dd188f1798ae972b077de43b31fc34a05204ebd4a7b444f0da0d375792ef4b164a5757e586",
     "carrera": "Ingeniería de Sistemas",
     "semestre": 2,
     "bio": "Aprendiendo Python día a día.",
-    "ofrece_tutorias": true,
+    "ofrece_tutorias": false,
     "es_admin": false,
     "fecha_registro": "2026-10-07T19:00:28.716831"
    },
    {
     "id": 5,
     "nombre": "Sofía Díaz",
-    "email": "sofia@uni.edu",
-    "password_hash": "scrypt:32768:8:1$HX5T4JNkCNq0XJu2$7a1357922e6ae056f1511b764fc22394dadc5b8e9c90178d3f237f15b6ebc43400eddb904a5a11d344227c65ea023165e20c45b39454896088092e64201d0283",
+    "email": "sofia@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$OFKtsZZnAADExaqK$1599b99ca1b7975f60b0e28f90e5a69c193c2d96b9d7fe3c88c11ba6f78b537ba98ee6e525f93a95e15c8c7a3ee8767b8dd9df980c4561baba853f1b130fad17",
     "carrera": "Matemáticas",
     "semestre": 7,
     "bio": "Tutorías de álgebra y estadística.",
-    "ofrece_tutorias": true,
+    "ofrece_tutorias": false,
     "es_admin": false,
     "fecha_registro": "2026-10-07T19:00:28.716832"
+   },
+   {
+    "id": 6,
+    "nombre": "Karen Morales",
+    "email": "karen@sanmateo.edu",
+    "password_hash": "scrypt:32768:8:1$1SHbMiYMrvhYMYad$93ed90d2b08c17866e8d98cdb6e4af8928fe310fb331132682fd1a3ac9528cbf1ad3cada8c8cae8200a75d9fb4b3c9beb1263bf21825dbe9fbba05e3de11976f",
+    "carrera": "Ingeniería de Sistemas",
+    "semestre": 6,
+    "bio": null,
+    "ofrece_tutorias": false,
+    "es_admin": false,
+    "fecha_registro": "2026-10-09T15:34:40.576120"
    }
   ],
   "apuntes": [
@@ -449,6 +461,21 @@
     "usuario_id": 5,
     "materia_id": 6,
     "fecha": "2026-10-07T19:00:28.718342"
+   },
+   {
+    "usuario_id": 6,
+    "materia_id": 3,
+    "fecha": "2026-10-09T15:34:40.577307"
+   },
+   {
+    "usuario_id": 6,
+    "materia_id": 4,
+    "fecha": "2026-10-09T15:34:40.577308"
+   },
+   {
+    "usuario_id": 6,
+    "materia_id": 5,
+    "fecha": "2026-10-09T15:34:40.577302"
    }
   ],
   "apunte_etiquetas": [
