@@ -17,25 +17,33 @@
       'jpg': 'bi-file-earmark-image text-info', 'jpeg': 'bi-file-earmark-image text-info',
       'zip': 'bi-file-earmark-zip text-secondary', 'md': 'bi-file-earmark-text text-dark',
       'txt': 'bi-file-earmark-text text-dark'} -%}
-  <i class="bi {{ mapa.get(ext, 'bi-file-earmark') }}"></i>
+  <i class="bi {{ mapa.get(ext, 'bi-file-earmark').split()[0] }}"></i>
+{%- endmacro %}
+
+{% macro clase_archivo(ext) -%}
+  {%- set grupos = {'pdf': 'pdf', 'doc': 'doc', 'docx': 'doc', 'ppt': 'ppt', 'pptx': 'ppt', 'xls': 'xls', 'xlsx': 'xls',
+                    'png': 'img', 'jpg': 'img', 'jpeg': 'img', 'zip': 'zip'} -%}
+  ico-{{ grupos.get(ext, 'txt') }}
 {%- endmacro %}
 
 {% macro tarjeta_apunte(a) -%}
-<div class="card h-100 shadow-sm tarjeta-apunte">
+<div class="card h-100 tarjeta-apunte">
   <div class="card-body">
-    <div class="d-flex justify-content-between align-items-start mb-1">
-      <span class="badge text-bg-light border">{{ a.tipo }}</span>
-      <span class="fs-4">{{ icono_archivo(a.extension) }}</span>
+    <div class="d-flex justify-content-between align-items-start">
+      <span class="ico-archivo {{ clase_archivo(a.extension) }}" title=".{{ a.extension }}">{{ icono_archivo(a.extension) }}</span>
+      <span class="badge text-bg-light">{{ a.tipo }}</span>
     </div>
-    <h6 class="card-title mb-1"><a class="stretched-link text-decoration-none" href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">{{ a.titulo }}</a></h6>
-    <div class="small text-muted mb-2">{{ a.materia.nombre }} · por {{ a.autor.nombre }}</div>
-    {{ estrellas(a.promedio_estrellas, a.calificaciones|length) }}
+    <h3 class="card-title"><a class="stretched-link" href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">{{ a.titulo }}</a></h3>
+    <div class="materia"><i class="bi bi-collection"></i> {{ a.materia.nombre }}</div>
+    <div class="autor"><span class="avatar avatar-sm">{{ a.autor.nombre[:1] }}</span> {{ a.autor.nombre }}</div>
+    {% if a.promedio_estrellas %}{{ estrellas(a.promedio_estrellas, a.calificaciones|length) }}
+    {% else %}<small class="text-muted"><i class="bi bi-star"></i> Sin calificaciones</small>{% endif %}
   </div>
-  <div class="card-footer bg-transparent small text-muted d-flex justify-content-between">
-    <span><i class="bi bi-download"></i> {{ a.total_descargas }}</span>
-    <span><i class="bi bi-heart"></i> {{ a.usuarios_like|length }}</span>
-    <span><i class="bi bi-chat"></i> {{ a.comentarios|length }}</span>
-    <span>{{ a.fecha_subida|fecha('%d/%m/%y') }}</span>
+  <div class="card-footer d-flex justify-content-between">
+    <span title="Descargas"><i class="bi bi-download"></i> {{ a.total_descargas }}</span>
+    <span title="Me gusta"><i class="bi bi-heart"></i> {{ a.usuarios_like|length }}</span>
+    <span title="Comentarios"><i class="bi bi-chat"></i> {{ a.comentarios|length }}</span>
+    <span title="Fecha de publicación"><i class="bi bi-calendar3"></i> {{ a.fecha_subida|fecha('%d/%m/%y') }}</span>
   </div>
 </div>
 {%- endmacro %}

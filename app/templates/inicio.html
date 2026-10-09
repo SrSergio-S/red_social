@@ -2,36 +2,81 @@
 {% from "_macros.html" import tarjeta_apunte, estrellas with context %}
 {% block titulo %}Inicio{% endblock %}
 {% block contenido %}
+<section class="saludo mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <h1>¡Hola, {{ current_user.nombre.split()[0] }}! 👋</h1>
+    <p>Estas son las novedades de las materias que sigues.</p>
+    <div class="mini-stats">
+      <span class="mini-stat"><b>{{ current_user.materias_seguidas|length }}</b> materias</span>
+      <span class="mini-stat"><b>{{ current_user.apuntes|length }}</b> apuntes publicados</span>
+      <span class="mini-stat"><b>{{ pendientes }}</b> tutorías por responder</span>
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-light" href="{{ url_for('main.subir_apunte') }}"><i class="bi bi-cloud-upload"></i> Subir apunte</a>
+    <a class="btn btn-outline-light" href="{{ url_for('main.materias') }}"><i class="bi bi-compass"></i> Explorar materias</a>
+  </div>
+</section>
+
+{% if pendientes %}{# en celular el aviso va arriba, en computador en la columna derecha #}
+  <a class="aviso-tutoria text-decoration-none d-lg-none mb-3" href="{{ url_for('tutorias.mis_tutorias') }}">
+    <span class="ico"><i class="bi bi-bell"></i></span>
+    <span>Tienes <b>{{ pendientes }}</b> solicitud{{ '' if pendientes == 1 else 'es' }} de tutoría pendiente{{ '' if pendientes == 1 else 's' }}. <b>Revisar →</b></span>
+  </a>
+{% endif %}
 <div class="row g-4">
   <div class="col-lg-8">
-    <h4 class="mb-3">Novedades de tus materias</h4>
+    <div class="titulo-seccion">
+      <h2>Novedades de tus materias</h2>
+      <a href="{{ url_for('main.buscar_apuntes') }}">Ver todos los apuntes →</a>
+    </div>
     {% if not current_user.materias_seguidas %}
-      <div class="alert alert-info">Aún no sigues ninguna materia. <a href="{{ url_for('main.materias') }}">Explora materias</a> y síguelas para ver aquí sus apuntes.</div>
+      <div class="vacio"><i class="bi bi-collection"></i>Aún no sigues ninguna materia.<br>
+        <a class="btn btn-primary btn-sm mt-3" href="{{ url_for('main.materias') }}">Explorar materias</a></div>
     {% elif not feed %}
-      <div class="alert alert-light border">Todavía no hay apuntes en tus materias. ¡<a href="{{ url_for('main.subir_apunte') }}">Sé el primero en subir uno</a>!</div>
+      <div class="vacio"><i class="bi bi-journal-plus"></i>Todavía no hay apuntes en tus materias.<br>
+        <a class="btn btn-primary btn-sm mt-3" href="{{ url_for('main.subir_apunte') }}">Sé el primero en subir uno</a></div>
     {% endif %}
     <div class="row row-cols-1 row-cols-md-2 g-3">
       {% for a in feed %}<div class="col">{{ tarjeta_apunte(a) }}</div>{% endfor %}
     </div>
   </div>
-  <div class="col-lg-4">
+
+  <div class="col-lg-4 d-flex flex-column gap-3">
     {% if pendientes %}
-      <div class="alert alert-warning"><i class="bi bi-bell"></i> Tienes <b>{{ pendientes }}</b> solicitud(es) de tutoría pendiente(s). <a href="{{ url_for('tutorias.mis_tutorias') }}">Revisar</a></div>
+      <a class="aviso-tutoria text-decoration-none d-none d-lg-flex" href="{{ url_for('tutorias.mis_tutorias') }}">
+        <span class="ico"><i class="bi bi-bell"></i></span>
+        <span>Tienes <b>{{ pendientes }}</b> solicitud{{ '' if pendientes == 1 else 'es' }} de tutoría
+          pendiente{{ '' if pendientes == 1 else 's' }}.<br><b>Revisar →</b></span>
+      </a>
     {% endif %}
-    <div class="card shadow-sm mb-3">
-      <div class="card-header fw-semibold"><i class="bi bi-collection"></i> Mis materias</div>
-      <ul class="list-group list-group-flush">
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-collection text-primary"></i> Mis materias</span>
+        <a class="small fw-semibold" href="{{ url_for('main.materias') }}">Ver todas</a>
+      </div>
+      <ul class="lista-lateral">
         {% for m in current_user.materias_seguidas %}
-          <li class="list-group-item"><a href="{{ url_for('main.ver_materia', materia_id=m.id) }}">{{ m.nombre }}</a> <small class="text-muted">{{ m.codigo }}</small></li>
-        {% else %}<li class="list-group-item text-muted">Ninguna</li>{% endfor %}
+          <li><a href="{{ url_for('main.ver_materia', materia_id=m.id) }}">
+            <span class="codigo">{{ m.codigo }}</span>
+            <span class="nombre">{{ m.nombre }}</span>
+            <span class="meta">{{ m.apuntes|length }} <i class="bi bi-journal-text"></i></span>
+          </a></li>
+        {% else %}<li class="text-muted small p-2">Aún no sigues materias.</li>{% endfor %}
       </ul>
     </div>
-    <div class="card shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-star"></i> Mejor valorados</div>
-      <ul class="list-group list-group-flush">
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-star-fill estrellas"></i> Mejor valorados</div>
+      <ul class="lista-lateral">
         {% for a, prom, n in mejor_valorados %}
-          <li class="list-group-item"><a href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">{{ a.titulo }}</a><br>{{ estrellas(prom|round(1), n) }}</li>
-        {% else %}<li class="list-group-item text-muted">Sin calificaciones aún</li>{% endfor %}
+          <li><a href="{{ url_for('main.ver_apunte', apunte_id=a.id) }}">
+            <span class="puesto">{{ loop.index }}</span>
+            <span class="nombre">{{ a.titulo }}<br><span class="meta">{{ a.materia.nombre }}</span></span>
+            <span class="estrellas small fw-semibold"><i class="bi bi-star-fill"></i> {{ prom|round(1) }}</span>
+          </a></li>
+        {% else %}<li class="text-muted small p-2">Sin calificaciones aún.</li>{% endfor %}
       </ul>
     </div>
   </div>
