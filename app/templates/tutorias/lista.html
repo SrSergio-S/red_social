@@ -43,12 +43,31 @@
 <h3 class="mb-3"><i class="bi bi-people"></i> Mis tutorías</h3>
 <div class="row g-4">
   <div class="col-lg-6">
-    <h5>Recibidas <small class="text-muted">(soy tutor)</small></h5>
-    {% for s in recibidas %}{{ tarjeta(s, 'tutor') }}{% else %}<p class="text-muted">No has recibido solicitudes.</p>{% endfor %}
+    <h5 class="d-flex flex-wrap align-items-center gap-2">Recibidas <small class="text-muted">(como tutor)</small>
+      {% if current_user.ofrece_tutorias %}<span class="badge text-bg-success"><i class="bi bi-check-circle"></i> Eres tutor</span>
+      {% else %}<span class="badge text-bg-light"><i class="bi bi-slash-circle"></i> No eres tutor</span>{% endif %}
+    </h5>
+    {% if not current_user.ofrece_tutorias %}
+      <div class="vacio mb-3">
+        <i class="bi bi-person-video3"></i>
+        <b class="text-body">No eres tutor.</b><br>
+        Por eso los demás estudiantes no pueden pedirte tutorías.<br>
+        Si quieres ayudar a otros, actívalo en tu perfil.
+        <div><a class="btn btn-primary btn-sm mt-3" href="{{ url_for('main.editar_perfil') }}"><i class="bi bi-toggle-on"></i> Quiero ofrecer tutorías</a></div>
+      </div>
+      {% if recibidas %}<p class="small text-muted mb-2">Solicitudes que recibiste cuando ofrecías tutorías:</p>{% endif %}
+      {% for s in recibidas %}{{ tarjeta(s, 'tutor') }}{% endfor %}
+    {% else %}
+      {% for s in recibidas %}{{ tarjeta(s, 'tutor') }}
+      {% else %}<div class="vacio"><i class="bi bi-inbox"></i>Aún no has recibido solicitudes.<br>
+        Cuando un estudiante te pida una tutoría aparecerá aquí.</div>{% endfor %}
+    {% endif %}
   </div>
   <div class="col-lg-6">
-    <h5>Enviadas <small class="text-muted">(soy estudiante)</small></h5>
-    {% for s in solicitadas %}{{ tarjeta(s, 'solicitante') }}{% else %}<p class="text-muted">No has solicitado tutorías.</p>{% endfor %}
+    <h5>Enviadas <small class="text-muted">(como estudiante)</small></h5>
+    {% for s in solicitadas %}{{ tarjeta(s, 'solicitante') }}
+    {% else %}<div class="vacio"><i class="bi bi-send"></i>No has solicitado tutorías.<br>
+      Puedes pedir una desde cualquier apunte con el botón <b>«Pedir tutoría al autor»</b>.</div>{% endfor %}
   </div>
 </div>
 {% endblock %}

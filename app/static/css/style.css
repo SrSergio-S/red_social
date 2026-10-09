@@ -164,7 +164,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -.01em; }
   padding: .9rem 1rem; color: #92400e; }
 .aviso-tutoria .ico { width: 38px; height: 38px; border-radius: 10px; background: #fef3c7; display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0; }
 .vacio { text-align: center; padding: 2.5rem 1rem; background: var(--u-superficie); border: 1px dashed #d1d5db; border-radius: var(--u-radio); color: var(--u-texto-suave); }
-.vacio i { font-size: 2rem; color: #c7d2fe; display: block; margin-bottom: .5rem; }
+.vacio > i { font-size: 2rem; color: #c7d2fe; display: block; margin-bottom: .5rem; }
 
 /* ---------- Portada (visitantes) ---------- */
 .hero { background: linear-gradient(135deg, #312e81, #4f46e5 50%, #1e88e5); color: #fff; border-radius: 20px; }
