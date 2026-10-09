@@ -11,15 +11,16 @@ desde el navegador.
 
 1. [Funcionalidades](#funcionalidades)
 2. [Cómo ejecutarla](#cómo-ejecutarla)
-3. [Cuentas para entrar](#cuentas-para-entrar)
-4. [Panel de administración](#panel-de-administración)
-5. [Llevar tus datos a otro computador](#llevar-tus-datos-a-otro-computador)
-6. [Trabajar en el código](#trabajar-en-el-código)
-7. [Comandos útiles](#comandos-útiles)
-8. [Base de datos](#base-de-datos)
-9. [Estructura del proyecto](#estructura-del-proyecto)
-10. [Tecnologías](#tecnologías)
-11. [Solución de problemas](#solución-de-problemas)
+3. [Con Docker](#con-docker)
+4. [Cuentas para entrar](#cuentas-para-entrar)
+5. [Panel de administración](#panel-de-administración)
+6. [Llevar tus datos a otro computador](#llevar-tus-datos-a-otro-computador)
+7. [Trabajar en el código](#trabajar-en-el-código)
+8. [Comandos útiles](#comandos-útiles)
+9. [Base de datos](#base-de-datos)
+10. [Estructura del proyecto](#estructura-del-proyecto)
+11. [Tecnologías](#tecnologías)
+12. [Solución de problemas](#solución-de-problemas)
 
 ## Funcionalidades
 
@@ -101,6 +102,71 @@ los datos guardados en la carpeta `datos/` o, si esa carpeta no existe, con los 
 
 Para traer la última versión a un Codespace que ya tenías: detén la app con `Ctrl + C` y ejecuta
 `git pull` y `pip install -r requirements.txt` antes de volver a iniciarla.
+
+## Con Docker
+
+El proyecto incluye un `Dockerfile` y un `docker-compose.yml`. Dentro del contenedor la app corre con
+**Gunicorn** (servidor de producción), como un usuario sin privilegios, y guarda la base de datos y los
+archivos subidos en un **volumen** para que no se pierdan al borrar o actualizar el contenedor.
+
+### Opción 1: construirla tú (necesitas el código)
+
+Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) o Docker
+Engine (Linux). En GitHub Codespaces Docker ya viene instalado.
+
+```bash
+docker compose up --build -d     # construye la imagen y arranca el contenedor en segundo plano
+```
+
+Abre **http://localhost:5000** (en Codespaces, la dirección del puerto 5000 en la pestaña **Ports**).
+La primera vez se cargan los datos de la carpeta `datos/`.
+
+| Comando | Qué hace |
+|---|---|
+| `docker compose ps` | Ver si el contenedor está corriendo (debe decir `healthy`) |
+| `docker compose logs -f` | Ver los registros de la app (`Ctrl + C` para salir) |
+| `docker compose stop` / `docker compose start` | Detener / volver a arrancar |
+| `docker compose up --build -d` | Aplicar cambios del código (reconstruye la imagen; los datos se conservan) |
+| `docker compose exec web python -m flask --app run guardar-datos` | Guardar los datos en la carpeta `datos/` de tu computador (luego súbelos con `git add datos`, `git commit` y `git push`) |
+| `docker compose exec web python -m flask --app run hacer-admin CORREO` | Dar acceso a `/admin` |
+| `docker compose down` | Borrar el contenedor (los datos se conservan en el volumen) |
+| `docker compose down -v` | Borrar el contenedor **y todos los datos** del volumen |
+
+Antes de usarla de verdad, cambia la clave secreta: crea un archivo `.env` junto a
+`docker-compose.yml` con una línea `SECRET_KEY=una-frase-larga-y-secreta` (este archivo no se sube a
+GitHub).
+
+### Opción 2: usar la imagen publicada (no necesitas el código)
+
+Cada vez que hay cambios en `main`, **GitHub Actions** ejecuta las pruebas, construye la imagen y la
+publica en GitHub Container Registry (archivo `.github/workflows/docker.yml`). Desde cualquier computador
+con Docker:
+
+```bash
+docker run -d --name apuntesu -p 5000:5000 \
+  -e SECRET_KEY=una-frase-larga-y-secreta \
+  -v apuntesu_datos:/app/instance \
+  ghcr.io/srsergio-s/red_social:latest
+```
+
+Para actualizarla: `docker pull ghcr.io/srsergio-s/red_social:latest`, luego `docker rm -f apuntesu` y el
+mismo `docker run` (los datos siguen en el volumen `apuntesu_datos`).
+
+> La primera vez que se publica, GitHub crea el paquete como **privado**. Para que cualquiera pueda
+> descargarlo: en GitHub entra a tu perfil → **Packages** → `red_social` → **Package settings** →
+> **Change visibility** → **Public**. El progreso de cada publicación se ve en la pestaña **Actions**.
+
+### Opción 3: publicarla en Docker Hub
+
+Si prefieres [Docker Hub](https://hub.docker.com/) (necesitas una cuenta gratuita):
+
+```bash
+docker login                                       # tu usuario y contraseña de Docker Hub
+docker build -t TU_USUARIO/apuntesu:latest .
+docker push TU_USUARIO/apuntesu:latest
+```
+
+Después cualquiera puede ejecutarla con `docker run -p 5000:5000 -v apuntesu_datos:/app/instance TU_USUARIO/apuntesu`.
 
 ## Cuentas para entrar
 
@@ -238,6 +304,10 @@ Relaciones principales:
 red_social/
 ├── run.py                   # Punto de entrada
 ├── requirements.txt         # Dependencias
+├── Dockerfile               # Imagen Docker de la app (Gunicorn)
+├── docker-compose.yml       # Levantar la app con "docker compose up"
+├── .dockerignore            # Archivos que no entran a la imagen
+├── .github/workflows/       # GitHub Actions: pruebas y publicación de la imagen
 ├── pytest.ini               # Configuración de las pruebas
 ├── app/
 │   ├── __init__.py          # Crea la app, la base de datos, el login y actualiza BD antiguas
@@ -264,7 +334,7 @@ red_social/
 
 Flask 3 · Flask-SQLAlchemy (ORM) · Flask-Login (sesiones) · Flask-WTF (protección CSRF) ·
 Flask-Admin + Flask-Babel (panel de administración en español) · SQLite · Bootstrap 5 + Bootstrap Icons ·
-pytest.
+pytest · Docker + Gunicorn · GitHub Actions.
 
 Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir la variable de entorno
 `DATABASE_URL` e instalar su driver; el código no cambia.
@@ -279,3 +349,5 @@ Para usar otra base de datos (por ejemplo PostgreSQL o MySQL) basta con definir 
 | No veo los cambios después de `git pull` | Reinicia la app (`Ctrl + C` y vuelve a iniciarla) y recarga con `Ctrl + F5`. |
 | No veo los datos que guardó otra persona | Después de `git pull`, detén la app y ejecuta `python -m flask --app run cargar-datos`. |
 | Entro a `/admin` y dice "No tienes permiso" | Tu usuario no es administrador: `python -m flask --app run hacer-admin TU_CORREO`. |
+| `docker: command not found` o "Cannot connect to the Docker daemon" | Instala y abre Docker Desktop (en Windows/Mac debe estar abierto mientras lo usas). |
+| El puerto 5000 ya está en uso al levantar Docker | Detén la app que corre con `flask` (`Ctrl + C`) o cambia `"5000:5000"` por `"5001:5000"` en `docker-compose.yml` y abre el puerto 5001. |

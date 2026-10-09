@@ -1,0 +1,22 @@
+# Levantar la app con un solo comando:   docker compose up --build
+# Luego abre http://localhost:5000
+services:
+  web:
+    build: .
+    image: apuntesu
+    container_name: apuntesu
+    ports:
+      - "5000:5000"
+    environment:
+      # Cambia esta clave (o defínela en un archivo .env junto a este archivo: SECRET_KEY=...)
+      SECRET_KEY: ${SECRET_KEY:-cambia-esta-clave-secreta}
+    volumes:
+      # Base de datos y archivos subidos: se conservan aunque borres o reconstruyas el contenedor
+      - apuntesu_instance:/app/instance
+      # Carpeta datos/ del proyecto: así "guardar-datos" dentro del contenedor la actualiza en tu
+      # computador y luego puedes subirla a GitHub con git
+      - ./datos:/app/datos
+    restart: unless-stopped
+
+volumes:
+  apuntesu_instance:
