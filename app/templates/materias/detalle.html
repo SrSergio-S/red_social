@@ -15,8 +15,8 @@
   <div class="d-flex gap-2">
     <form method="post" action="{{ url_for('main.seguir_materia', materia_id=materia.id) }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      {% if current_user.sigue(materia) %}<button class="btn btn-success"><i class="bi bi-check2"></i> Siguiendo</button>
-      {% else %}<button class="btn btn-outline-primary"><i class="bi bi-plus"></i> Seguir</button>{% endif %}
+      {% if current_user.sigue(materia) %}<button class="btn btn-light border" title="Dejar de seguir"><i class="bi bi-check2 text-success"></i> Siguiendo</button>
+      {% else %}<button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Seguir</button>{% endif %}
     </form>
     <a class="btn btn-warning" href="{{ url_for('main.subir_apunte', materia_id=materia.id) }}"><i class="bi bi-cloud-upload"></i> Subir apunte</a>
   </div>
