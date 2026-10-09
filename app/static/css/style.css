@@ -228,3 +228,15 @@ details summary { cursor: pointer; list-style: none; }
   .podio-tarjeta.puesto-1 { order: 1; } .podio-tarjeta.puesto-2 { order: 2; } .podio-tarjeta.puesto-3 { order: 3; }
   .podio-tarjeta { margin-top: .75rem; }
 }
+
+/* Barra de navegación en pantallas medianas (laptops): que nada se parta en dos líneas */
+.navbar .nav-link, .btn-subir { white-space: nowrap; }
+.buscador input { min-width: 0; width: 230px; }
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .buscador input { width: 170px; }
+  .navbar-dark .navbar-nav .nav-link { padding: .45rem .55rem; }
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .navbar .nav-texto { display: none; }   /* solo iconos en pantallas angostas */
+  .buscador input { width: 150px; }
+}
