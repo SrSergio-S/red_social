@@ -58,7 +58,7 @@
         <span class="puesto">{{ loop.index + 3 }}</span>
         <span class="avatar">{{ u.nombre[:1] }}</span>
         <span class="ranking-persona">
-          <b>{{ u.nombre }}</b>{% if current_user.is_authenticated and current_user.id == u.id %} <span class="badge text-bg-primary">Tú</span>{% endif %}
+          <span><b>{{ u.nombre }}</b>{% if current_user.is_authenticated and current_user.id == u.id %} <span class="badge text-bg-primary">Tú</span>{% endif %}</span>
           <small>{{ u.carrera or 'Carrera no indicada' }}</small>
         </span>
         <span class="ranking-datos d-none d-md-flex">{{ datos(u, n_apuntes) }}</span>
