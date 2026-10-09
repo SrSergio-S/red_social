@@ -408,7 +408,10 @@ def test_carga_automatica_cuando_datos_cambia(tmp_path):
 
 
 def test_subir_a_github_solo_sube_la_carpeta_datos(tmp_path):
+    import shutil
     import subprocess
+    if not shutil.which("git"):
+        pytest.skip("git no está instalado (por ejemplo, dentro del contenedor)")
     from app.datos import guardar_datos, subir_a_github
 
     def git(*args, cwd):
@@ -437,3 +440,20 @@ def test_subir_a_github_solo_sube_la_carpeta_datos(tmp_path):
 
     archivos = git("show", "--name-only", "--format=", "main", cwd=remoto)
     assert "datos/datos.json" in archivos and "codigo.py" not in archivos
+
+
+def test_la_app_solo_arranca_dentro_de_docker(tmp_path, monkeypatch):
+    class SinPruebas(TestConfig):
+        TESTING = False
+        UPLOAD_FOLDER = str(tmp_path / "uploads")
+
+    monkeypatch.delenv("APUNTESU_EN_DOCKER", raising=False)
+    with pytest.raises(SystemExit) as error:
+        create_app(SinPruebas)
+    assert "docker compose up" in str(error.value)
+
+    monkeypatch.setenv("APUNTESU_EN_DOCKER", "1")   # lo que define el Dockerfile
+    app = create_app(SinPruebas)
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
