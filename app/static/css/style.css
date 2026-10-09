@@ -182,3 +182,39 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -.01em; }
 .selector-estrellas label:hover ~ label { color: var(--u-estrella); }
 .barra-dist { height: .6rem; }
 details summary { cursor: pointer; list-style: none; }
+
+/* ---------- Ranking ---------- */
+.saludo h1 i { color: #fde68a; }
+.tarjeta-podio { color: var(--u-texto); transition: transform .15s, box-shadow .15s; }
+.tarjeta-podio:hover { transform: translateY(-3px); box-shadow: var(--u-sombra-hover) !important; color: var(--u-texto); text-decoration: none; }
+.tarjeta-podio .card-body { padding: 1.4rem 1.2rem; display: flex; flex-direction: column; align-items: center; }
+.tarjeta-podio .avatar-lg { width: 72px; height: 72px; font-size: 1.7rem; margin: .7rem 0 .6rem; }
+.tarjeta-podio .nombre { font-size: 1.1rem; margin: 0 0 .15rem; }
+.tarjeta-podio .medalla { font-size: .8rem; font-weight: 700; border-radius: 999px; padding: .3rem .75rem; }
+.puesto-1 { border-top: 4px solid #f5a623; }
+.puesto-1 .card-body { padding-top: 2rem; padding-bottom: 1.8rem; }
+.puesto-1 .avatar-lg { width: 88px; height: 88px; font-size: 2.1rem; box-shadow: 0 0 0 4px #fef3c7; }
+.puesto-1 .medalla { background: #fef3c7; color: #92400e; }
+.puesto-2 { border-top: 4px solid #9ca3af; }
+.puesto-2 .medalla { background: #e5e7eb; color: #374151; }
+.puesto-3 { border-top: 4px solid #d97706; }
+.puesto-3 .medalla { background: #ffedd5; color: #9a3412; }
+.es-yo.tarjeta-podio, .lista-ranking .es-yo a { background: #f5f5ff; }
+.lista-ranking { list-style: none; margin: 0; padding: .35rem .5rem .5rem; }
+.lista-ranking li + li { border-top: 1px solid #f1f2f4; }
+.lista-ranking li a { display: flex; align-items: center; gap: .8rem; padding: .7rem .6rem; border-radius: 10px; color: var(--u-texto); }
+.lista-ranking li a:hover { background: #f5f5ff; text-decoration: none; }
+.lista-ranking .puesto { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: .8rem;
+  background: #f3f4f6; color: var(--u-texto-2); flex-shrink: 0; }
+.lista-ranking .nombre { flex: 1; min-width: 0; font-weight: 600; line-height: 1.25; }
+.lista-ranking .meta { font-size: .75rem; font-weight: 400; color: var(--u-texto-suave); }
+.lista-ranking .apuntes { font-size: .85rem; color: var(--u-texto-2); white-space: nowrap; min-width: 52px; text-align: right; }
+.lista-ranking .calif { min-width: 150px; text-align: right; }
+@media (max-width: 575.98px) {
+  /* En celular: puesto, avatar y nombre arriba; apuntes y calificación debajo del nombre */
+  .lista-ranking li a { display: grid; grid-template-columns: 28px 32px 1fr auto; column-gap: .7rem; row-gap: .35rem; }
+  .lista-ranking .nombre { grid-column: 3 / 5; }
+  .lista-ranking .apuntes { grid-column: 3; min-width: 0; text-align: left; }
+  .lista-ranking .calif { grid-column: 4; min-width: 0; }
+  .puesto-1 .card-body { padding-top: 1.4rem; padding-bottom: 1.4rem; }
+}
